@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_csh_tx_monthlyschedule_domain_model_mymonth.xlf" date="2025-11-25T10:42:38Z" product-name="monthlyschedule">
+		<header/>
+		<body>
+			<trans-unit id="month.description" resname="month.description">
+				<source>month</source>
+			</trans-unit>
+			<trans-unit id="year.description" resname="year.description">
+				<source>year</source>
+			</trans-unit>
+			<trans-unit id="days.description" resname="days.description">
+				<source>days</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

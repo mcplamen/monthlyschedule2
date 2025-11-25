@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf" date="2025-11-25T10:42:38Z" product-name="monthlyschedule">
+		<header/>
+		<body>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth" resname="tx_monthlyschedule_domain_model_mymonth">
+				<source>Mymonth</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.description" resname="tx_monthlyschedule_domain_model_mymonth.description">
+				<source>Mymonth</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.month" resname="tx_monthlyschedule_domain_model_mymonth.month">
+				<source>Month</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.month.description" resname="tx_monthlyschedule_domain_model_mymonth.month.description">
+				<source>Month</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.year" resname="tx_monthlyschedule_domain_model_mymonth.year">
+				<source>Year</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.year.description" resname="tx_monthlyschedule_domain_model_mymonth.year.description">
+				<source>Year</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.days" resname="tx_monthlyschedule_domain_model_mymonth.days">
+				<source>Days</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_mymonth.days.description" resname="tx_monthlyschedule_domain_model_mymonth.days.description">
+				<source>Days</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday" resname="tx_monthlyschedule_domain_model_myday">
+				<source>Myday</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.description" resname="tx_monthlyschedule_domain_model_myday.description">
+				<source>Myday</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.dayname" resname="tx_monthlyschedule_domain_model_myday.dayname">
+				<source>Dayname</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.dayname.description" resname="tx_monthlyschedule_domain_model_myday.dayname.description">
+				<source>Dayname</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.timeslot" resname="tx_monthlyschedule_domain_model_myday.timeslot">
+				<source>Timeslot</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.timeslot.description" resname="tx_monthlyschedule_domain_model_myday.timeslot.description">
+				<source>Timeslot</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.confirm" resname="tx_monthlyschedule_domain_model_myday.confirm">
+				<source>Confirm</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.confirm.description" resname="tx_monthlyschedule_domain_model_myday.confirm.description">
+				<source>Confirm</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.person" resname="tx_monthlyschedule_domain_model_myday.person">
+				<source>Person</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.person.description" resname="tx_monthlyschedule_domain_model_myday.person.description">
+				<source>Person</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.email" resname="tx_monthlyschedule_domain_model_myday.email">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.email.description" resname="tx_monthlyschedule_domain_model_myday.email.description">
+				<source>Email</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.topic" resname="tx_monthlyschedule_domain_model_myday.topic">
+				<source>Topic</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.topic.description" resname="tx_monthlyschedule_domain_model_myday.topic.description">
+				<source>Topic</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_monthlyschedule.name" resname="tx_monthlyschedule_monthlyschedule.name">
+				<source>Monthly Meeting Schedule</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_monthlyschedule.description" resname="tx_monthlyschedule_monthlyschedule.description">
+				<source>Monthly Meeting Schedule </source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

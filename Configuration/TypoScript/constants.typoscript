@@ -1,0 +1,14 @@
+plugin.tx_monthlyschedule_monthlyschedule {
+    view {
+        # cat=plugin.tx_monthlyschedule_monthlyschedule/file; type=string; label=Path to template root (FE)
+        templateRootPath = EXT:monthlyschedule/Resources/Private/Templates/
+        # cat=plugin.tx_monthlyschedule_monthlyschedule/file; type=string; label=Path to template partials (FE)
+        partialRootPath = EXT:monthlyschedule/Resources/Private/Partials/
+        # cat=plugin.tx_monthlyschedule_monthlyschedule/file; type=string; label=Path to template layouts (FE)
+        layoutRootPath = EXT:monthlyschedule/Resources/Private/Layouts/
+    }
+    persistence {
+        # cat=plugin.tx_monthlyschedule_monthlyschedule//a; type=string; label=Default storage PID
+        storagePid =
+    }
+}

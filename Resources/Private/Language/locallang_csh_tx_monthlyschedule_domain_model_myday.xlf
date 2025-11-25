@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_csh_tx_monthlyschedule_domain_model_myday.xlf" date="2025-11-25T10:42:38Z" product-name="monthlyschedule">
+		<header/>
+		<body>
+			<trans-unit id="dayname.description" resname="dayname.description">
+				<source>dayname</source>
+			</trans-unit>
+			<trans-unit id="timeslot.description" resname="timeslot.description">
+				<source>timeslot</source>
+			</trans-unit>
+			<trans-unit id="confirm.description" resname="confirm.description">
+				<source>confirm</source>
+			</trans-unit>
+			<trans-unit id="person.description" resname="person.description">
+				<source>person</source>
+			</trans-unit>
+			<trans-unit id="email.description" resname="email.description">
+				<source>email</source>
+			</trans-unit>
+			<trans-unit id="topic.description" resname="topic.description">
+				<source>topic</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>

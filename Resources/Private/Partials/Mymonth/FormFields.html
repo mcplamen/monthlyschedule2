@@ -1,0 +1,15 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<label for="month">
+	<f:translate key="tx_monthlyschedule_domain_model_mymonth.month" />
+</label><br />
+	<f:form.select 
+    property="month" name="month" 
+    id="month"
+    options="{1: 'Januar', 2: 'Februar', 3: 'März', 4: 'April', 5: 'Mai', 6: 'Juni', 7: 'Juli', 8: 'August', 9: 'September', 10: 'Oktober', 11: 'November', 12: 'Dezember'}"
+    optionLabelField="value"
+    optionValueField="key"/><br />
+<label for="year">
+	<f:translate key="tx_monthlyschedule_domain_model_mymonth.year" />
+</label><br />
+	<f:form.textfield property="year" id="year" /><br />
+</html>

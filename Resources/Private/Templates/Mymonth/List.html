@@ -1,0 +1,43 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+<f:layout name="Default" />
+
+This template is responsible for creating a table of domain objects.
+
+If you modify this template, do not forget to change the overwrite settings
+in /Configuration/ExtensionBuilder/settings.yaml:
+  Resources:
+    Private:
+      Templates:
+        Mymonth:
+          List.html: keep
+
+Otherwise your changes will be overwritten the next time you save the extension in the extension builder
+
+<f:section name="content">
+    <h1>Listing for Mymonth</h1>
+
+    <f:flashMessages />
+
+    <table class="tx_monthlyschedule">
+        <tr>
+            <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.month" /></th>
+            <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.year" /></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <f:for each="{mymonths}" as="mymonth">
+            <tr>
+                <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.month}</f:link.action></td>
+                <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.year}</f:link.action></td>
+                <td><f:link.action action="edit" arguments="{mymonth : mymonth}">Edit</f:link.action></td>
+                <td><f:link.action action="delete" arguments="{mymonth : mymonth}">Delete</f:link.action></td>
+				<td><f:link.action action="new" controller="Myday" extensionName="Monthlyschedule" pluginName="Monthlyschedule" arguments="{mymonth: month}">New days for the month</f:link.action></td>
+				
+
+            </tr>
+        </f:for>
+    </table>
+
+    <f:link.action action="new">New Mymonth</f:link.action>
+</f:section>
+</html>
