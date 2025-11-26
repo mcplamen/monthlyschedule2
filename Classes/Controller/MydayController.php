@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Mcplamen\Monthlyschedule\Controller;
+namespace MCplamen\Monthlyschedule\Controller;
 
+use MCplamen\Monthlyschedule\Domain\Model\Myday;
 use MCplamen\Monthlyschedule\Domain\Repository\MydayRepository;
 use MCplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -21,7 +22,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 /**
  * MydayController
  */
-class MydayController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class MydayController extends ActionController
 {
 	 /**
      * @var MydayRepository
@@ -34,8 +35,6 @@ class MydayController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     protected $mymonthRepository;
 
     /**
-     * Inject the myday repository
-     *
      * @param MydayRepository $mydayRepository
      */
     public function injectMydayRepository(MydayRepository $mydayRepository)
@@ -44,8 +43,6 @@ class MydayController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     }
 
     /**
-     * Inject the mymonth repository
-     *
      * @param MymonthRepository $mymonthRepository
      */
     public function injectMymonthRepository(MymonthRepository $mymonthRepository)

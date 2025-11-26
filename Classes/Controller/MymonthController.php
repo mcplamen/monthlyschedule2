@@ -2,22 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Mcplamen\Monthlyschedule\Controller;
+namespace MCplamen\Monthlyschedule\Controller;
 
+use MCplamen\Monthlyschedule\Domain\Model\Mymonth;
+use MCplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
+use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
-/**
- * This file is part of the "Monthly Schedule" Extension for TYPO3 CMS.
- *
- * For the full copyright and license information, please read the
- * LICENSE.txt file that was distributed with this source code.
- *
- * (c) 2025 Plamen Petkov <mcplamen@gmail.com>, NR OOD
- */
-
-/**
- * MymonthController
- */
-class MymonthController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+class MymonthController extends ActionController
 {
 
     /**
