@@ -1,4 +1,5 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+     <f:form.hidden name="mymonth" value="{mymonth.uid}" />
 <label for="dayname">
 	<f:translate key="tx_monthlyschedule_domain_model_myday.dayname" />
 </label><br />
@@ -7,6 +8,10 @@
 	<f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" />
 </label><br />
 	<f:form.textfield property="timeslot" id="timeslot" /><br />
+<label for="timeslotend">
+	<f:translate key="tx_monthlyschedule_domain_model_myday.timeslotend" />
+</label><br />
+	<f:form.textfield property="timeslotend" id="timeslotend" /><br />	
 <label for="confirm">
 	<f:translate key="tx_monthlyschedule_domain_model_myday.confirm" />
 </label><br />

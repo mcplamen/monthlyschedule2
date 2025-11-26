@@ -60,22 +60,28 @@ class MydayController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
      * @param \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function newAction(\Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth = null): \Psr\Http\Message\ResponseInterface
-    {
-        return $this->htmlResponse();
-    }
+	public function newAction(\McPlamen\Monthlyschedule2\Domain\Model\Mymonth $mymonth)
+	{
+		$newDay = new \McPlamen\Monthlyschedule2\Domain\Model\Myday();
+		$newDay->setMymonth($mymonth);
+		$this->view->assign('myday', $newDay);
+		$this->view->assign('mymonth', $mymonth);
+	}
 
     /**
      * action create
      *
      * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday
      */
-    public function createAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday)
-    {
-        $this->addFlashMessage('The object was created. Please be aware that this action is publicly accessible unless you implement an access check. See https://docs.typo3.org/p/friendsoftypo3/extension-builder/master/en-us/User/Index.html', '', \TYPO3\CMS\Core\Messaging\AbstractMessage::WARNING);
-        $this->mydayRepository->add($newMyday);
-        $this->redirect('list');
-    }
+	public function createAction(
+		\McPlamen\Monthlyschedule2\Domain\Model\Myday $myday,
+		\McPlamen\Monthlyschedule2\Domain\Model\Mymonth $mymonth
+	) {
+		$myday->setMymonth($mymonth);
+
+		$this->mydayRepository->add($myday);
+		$this->redirect('show', 'Mymonth', null, ['mymonth' => $mymonth]);
+	}
 
     /**
      * action edit
