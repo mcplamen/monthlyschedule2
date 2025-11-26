@@ -31,7 +31,15 @@ Otherwise your changes will be overwritten the next time you save the extension 
                 <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.year}</f:link.action></td>
                 <td><f:link.action action="edit" arguments="{mymonth : mymonth}">Edit</f:link.action></td>
                 <td><f:link.action action="delete" arguments="{mymonth : mymonth}">Delete</f:link.action></td>
-				<td><f:link.action action="new" controller="Myday" extensionName="Monthlyschedule" pluginName="Monthlyschedule" arguments="{mymonth: month}">New days for the month</f:link.action></td>
+				<td><f:link.action 
+    action="new" 
+    controller="Myday" 
+    extensionName="Monthlyschedule" 
+    arguments="{mymonthUid: mymonth.uid}">
+    New days for the montha
+</f:link.action>
+
+</td>
 				
 
             </tr>
