@@ -80,6 +80,27 @@ class MydayTest extends UnitTestCase
     /**
      * @test
      */
+    public function getTimeslotendReturnsInitialValueForString(): void
+    {
+        self::assertSame(
+            '',
+            $this->subject->getTimeslotend()
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function setTimeslotendForStringSetsTimeslotend(): void
+    {
+        $this->subject->setTimeslotend('Conceived at T3CON10');
+
+        self::assertEquals('Conceived at T3CON10', $this->subject->_get('timeslotend'));
+    }
+
+    /**
+     * @test
+     */
     public function getConfirmReturnsInitialValueForBool(): void
     {
         self::assertFalse($this->subject->getConfirm());

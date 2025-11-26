@@ -8,6 +8,7 @@ CREATE TABLE tx_monthlyschedule_domain_model_myday (
 	mymonth int(11) unsigned DEFAULT '0' NOT NULL,
 	dayname varchar(255) NOT NULL DEFAULT '',
 	timeslot varchar(255) NOT NULL DEFAULT '',
+	timeslotend varchar(255) NOT NULL DEFAULT '',
 	confirm smallint(1) unsigned NOT NULL DEFAULT '0',
 	person varchar(255) NOT NULL DEFAULT '',
 	email varchar(255) NOT NULL DEFAULT '',

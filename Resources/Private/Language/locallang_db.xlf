@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf" date="2025-11-25T10:42:38Z" product-name="monthlyschedule">
+	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf" date="2025-11-26T08:43:10Z" product-name="monthlyschedule">
 		<header/>
 		<body>
 			<trans-unit id="tx_monthlyschedule_domain_model_mymonth" resname="tx_monthlyschedule_domain_model_mymonth">
@@ -44,6 +44,12 @@
 			</trans-unit>
 			<trans-unit id="tx_monthlyschedule_domain_model_myday.timeslot.description" resname="tx_monthlyschedule_domain_model_myday.timeslot.description">
 				<source>Timeslot</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.timeslotend" resname="tx_monthlyschedule_domain_model_myday.timeslotend">
+				<source>Timeslotend</source>
+			</trans-unit>
+			<trans-unit id="tx_monthlyschedule_domain_model_myday.timeslotend.description" resname="tx_monthlyschedule_domain_model_myday.timeslotend.description">
+				<source>Timeslotend</source>
 			</trans-unit>
 			<trans-unit id="tx_monthlyschedule_domain_model_myday.confirm" resname="tx_monthlyschedule_domain_model_myday.confirm">
 				<source>Confirm</source>

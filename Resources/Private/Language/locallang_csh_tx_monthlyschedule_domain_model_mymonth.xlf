@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_csh_tx_monthlyschedule_domain_model_mymonth.xlf" date="2025-11-25T10:42:38Z" product-name="monthlyschedule">
+	<file source-language="en" datatype="plaintext" original="EXT:monthlyschedule/Resources/Private/Language/locallang_csh_tx_monthlyschedule_domain_model_mymonth.xlf" date="2025-11-26T08:43:10Z" product-name="monthlyschedule">
 		<header/>
 		<body>
 			<trans-unit id="month.description" resname="month.description">

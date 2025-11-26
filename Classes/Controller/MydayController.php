@@ -57,6 +57,7 @@ class MydayController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
     /**
      * action new
      *
+     * @param \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function newAction(\Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth = null): \Psr\Http\Message\ResponseInterface

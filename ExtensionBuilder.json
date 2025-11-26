@@ -145,6 +145,18 @@
                             "propertyIsL10nModeExclude": false,
                             "propertyIsNullable": false,
                             "propertyIsRequired": false,
+                            "propertyName": "timeslotend",
+                            "propertyType": "String",
+                            "uid": "917870451984"
+                        },
+                        {
+                            "allowedFileTypes": "",
+                            "maxItems": "1",
+                            "propertyDescription": "",
+                            "propertyIsExcludeField": true,
+                            "propertyIsL10nModeExclude": false,
+                            "propertyIsNullable": false,
+                            "propertyIsRequired": false,
                             "propertyName": "confirm",
                             "propertyType": "Boolean",
                             "uid": "1422523670589"
@@ -251,7 +263,7 @@
     ],
     "storagePath": "\/www\/htdocs\/w00d7892\/upgrade.panacea.de\/typo3conf\/ext\/",
     "log": {
-        "last_modified": "2025-11-25 10:42",
+        "last_modified": "2025-11-26 08:43",
         "extension_builder_version": "11.0.13",
         "be_user": " (1)"
     }

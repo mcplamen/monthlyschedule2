@@ -17,11 +17,11 @@ return [
             'starttime' => 'starttime',
             'endtime' => 'endtime',
         ],
-        'searchFields' => 'dayname,timeslot,person,email,topic',
+        'searchFields' => 'dayname,timeslot,timeslotend,person,email,topic',
         'iconfile' => 'EXT:monthlyschedule/Resources/Public/Icons/tx_monthlyschedule_domain_model_myday.gif'
     ],
     'types' => [
-        '1' => ['showitem' => 'dayname, timeslot, confirm, person, email, topic, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access, hidden, starttime, endtime'],
+        '1' => ['showitem' => 'dayname, timeslot, timeslotend, confirm, person, email, topic, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:language, sys_language_uid, l10n_parent, l10n_diffsource, --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access, hidden, starttime, endtime'],
     ],
     'columns' => [
         'sys_language_uid' => [
@@ -110,6 +110,17 @@ return [
             'exclude' => true,
             'label' => 'LLL:EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf:tx_monthlyschedule_domain_model_myday.timeslot',
             'description' => 'LLL:EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf:tx_monthlyschedule_domain_model_myday.timeslot.description',
+            'config' => [
+                'type' => 'input',
+                'size' => 30,
+                'eval' => 'trim',
+                'default' => ''
+            ],
+        ],
+        'timeslotend' => [
+            'exclude' => true,
+            'label' => 'LLL:EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf:tx_monthlyschedule_domain_model_myday.timeslotend',
+            'description' => 'LLL:EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf:tx_monthlyschedule_domain_model_myday.timeslotend.description',
             'config' => [
                 'type' => 'input',
                 'size' => 30,

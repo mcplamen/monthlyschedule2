@@ -63,6 +63,13 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     protected $topic = '';
 
     /**
+     * timeslotend
+     *
+     * @var string
+     */
+    protected $timeslotend = '';
+
+    /**
      * Returns the dayname
      *
      * @return string
@@ -196,5 +203,26 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     public function setTopic(string $topic)
     {
         $this->topic = $topic;
+    }
+
+    /**
+     * Returns the timeslotend
+     *
+     * @return string
+     */
+    public function getTimeslotend()
+    {
+        return $this->timeslotend;
+    }
+
+    /**
+     * Sets the timeslotend
+     *
+     * @param string $timeslotend
+     * @return void
+     */
+    public function setTimeslotend(string $timeslotend)
+    {
+        $this->timeslotend = $timeslotend;
     }
 }
