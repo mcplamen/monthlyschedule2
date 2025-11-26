@@ -4,96 +4,174 @@ declare(strict_types=1);
 
 namespace Mcplamen\Monthlyschedule\Controller;
 
+use MCplamen\Monthlyschedule\Domain\Repository\MydayRepository;
+use MCplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use Psr\Http\Message\ResponseInterface;
-use Mcplamen\Monthlyschedule\Domain\Model\Myday;
-use Mcplamen\Monthlyschedule\Domain\Model\Mymonth;
-use Mcplamen\Monthlyschedule\Domain\Repository\MydayRepository;
-use Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
 
-class MydayController extends ActionController
+
+/**
+ * This file is part of the "Monthly Schedule" Extension for TYPO3 CMS.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * (c) 2025 Plamen Petkov <mcplamen@gmail.com>, NR OOD
+ */
+
+/**
+ * MydayController
+ */
+class MydayController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
 {
-    protected MydayRepository $mydayRepository;
-    protected MymonthRepository $mymonthRepository;
+	 /**
+     * @var MydayRepository
+     */
+    protected $mydayRepository;
 
-    public function __construct(
-        MydayRepository $mydayRepository,
-        MymonthRepository $mymonthRepository
-    ) {
+    /**
+     * @var MymonthRepository
+     */
+    protected $mymonthRepository;
+
+    /**
+     * Inject the myday repository
+     *
+     * @param MydayRepository $mydayRepository
+     */
+    public function injectMydayRepository(MydayRepository $mydayRepository)
+    {
         $this->mydayRepository = $mydayRepository;
+    }
+
+    /**
+     * Inject the mymonth repository
+     *
+     * @param MymonthRepository $mymonthRepository
+     */
+    public function injectMymonthRepository(MymonthRepository $mymonthRepository)
+    {
         $this->mymonthRepository = $mymonthRepository;
     }
 
-    public function indexAction(): ResponseInterface
+    /**
+     * action index
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
         return $this->htmlResponse();
     }
 
-    public function listAction(): ResponseInterface
+    /**
+     * action list
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function listAction(): \Psr\Http\Message\ResponseInterface
     {
         $mydays = $this->mydayRepository->findAll();
         $this->view->assign('mydays', $mydays);
         return $this->htmlResponse();
     }
 
-    public function showAction(Myday $myday): ResponseInterface
+    /**
+     * action show
+     *
+     * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function showAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday): \Psr\Http\Message\ResponseInterface
+    {
+        $this->view->assign('myday', $myday);
+        return $this->htmlResponse();
+    }
+
+	/**
+	 * action new
+	 *
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday
+	 * @param int $mymonth
+	 * @return void
+	 */
+	public function newAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday = NULL, $mymonth = 0)
+	{
+		// Ако има подаден mymonth UID, зареди обекта
+		if ($mymonth > 0 && $newMyday === NULL) {
+			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
+			
+			// Създай нов Myday обект и задай релацията
+			$newMyday = $this->objectManager->get(\Mcplamen\Monthlyschedule\Domain\Model\Myday::class);
+			$newMyday->setMymonth($mymonthObject);
+		}
+		
+		$this->view->assign('newMyday', $newMyday);
+		$this->view->assign('mymonth', $mymonth);
+	}
+
+	/**
+	 * action create
+	 *
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday
+	 * @return void
+	 */
+	public function createAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday)
+	{
+		$this->mydayRepository->add($newMyday);
+		
+		$this->addFlashMessage('Day was created successfully.');
+		
+		// Редирект обратно към списъка на месеца
+		if ($newMyday->getMymonth()) {
+			$this->redirect('list', 'Mymonth');
+		} else {
+			$this->redirect('list');
+		}
+	}
+
+    /**
+     * action edit
+     *
+     * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
+     * @TYPO3\CMS\Extbase\Annotation\IgnoreValidation("myday")
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function editAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday): \Psr\Http\Message\ResponseInterface
     {
         $this->view->assign('myday', $myday);
         return $this->htmlResponse();
     }
 
     /**
-     * New action – получава UID и зарежда обекта
+     * action update
+     *
+     * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
      */
-    public function newAction(int $mymonthUid): ResponseInterface
+    public function updateAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
     {
-        $mymonth = $this->mymonthRepository->findByUid($mymonthUid);
-        if ($mymonth === null) {
-            $this->addFlashMessage('Month not found');
-            return $this->redirect('list');
-        }
-
-        $newDay = new Myday();
-        $newDay->setMymonth($mymonth);
-
-        $this->view->assignMultiple([
-            'myday'   => $newDay,
-            'mymonth' => $mymonth,
-        ]);
-
-        return $this->htmlResponse();
-    }
-
-    public function createAction(Myday $myday, int $mymonthUid): ResponseInterface
-    {
-        $mymonth = $this->mymonthRepository->findByUid($mymonthUid);
-        if ($mymonth) {
-            $myday->setMymonth($mymonth);
-            $this->mydayRepository->add($myday);
-        }
-
-        return $this->redirect('show', 'Mymonth', null, ['mymonth' => $mymonth]);
-    }
-
-    public function editAction(Myday $myday): ResponseInterface
-    {
-        $this->view->assign('myday', $myday);
-        return $this->htmlResponse();
-    }
-
-    public function updateAction(Myday $myday): ResponseInterface
-    {
+        $this->addFlashMessage('The object was updated. Please be aware that this action is publicly accessible unless you implement an access check. See https://docs.typo3.org/p/friendsoftypo3/extension-builder/master/en-us/User/Index.html', '', \TYPO3\CMS\Core\Messaging\AbstractMessage::WARNING);
         $this->mydayRepository->update($myday);
-        return $this->redirect('list');
+        $this->redirect('list');
     }
 
-    public function deleteAction(Myday $myday): ResponseInterface
+    /**
+     * action delete
+     *
+     * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
+     */
+    public function deleteAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
     {
+        $this->addFlashMessage('The object was deleted. Please be aware that this action is publicly accessible unless you implement an access check. See https://docs.typo3.org/p/friendsoftypo3/extension-builder/master/en-us/User/Index.html', '', \TYPO3\CMS\Core\Messaging\AbstractMessage::WARNING);
         $this->mydayRepository->remove($myday);
-        return $this->redirect('list');
+        $this->redirect('list');
     }
 
-    public function selectAction(): ResponseInterface
+    /**
+     * action select
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function selectAction(): \Psr\Http\Message\ResponseInterface
     {
         return $this->htmlResponse();
     }

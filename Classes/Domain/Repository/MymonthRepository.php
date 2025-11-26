@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Mcplamen\Monthlyschedule\Domain\Repository;
 
+use TYPO3\CMS\Extbase\Persistence\Repository;
+
 
 /**
  * This file is part of the "Monthly Schedule" Extension for TYPO3 CMS.
@@ -17,7 +19,7 @@ namespace Mcplamen\Monthlyschedule\Domain\Repository;
 /**
  * The repository for Mymonths
  */
-class MymonthRepository extends \TYPO3\CMS\Extbase\Persistence\Repository
+class MymonthRepository extends Repository
 {
 
     /**

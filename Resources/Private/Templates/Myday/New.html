@@ -21,8 +21,16 @@ Otherwise your changes will be overwritten the next time you save the extension 
     <f:render partial="FormErrors" />
 
     <f:form action="create" name="newMyday" object="{newMyday}" pluginName="Monthlyschedule">
+	    <f:if condition="{newMyday.mymonth}">
+        <p><strong>Adding day to month:</strong> {newMyday.mymonth.mymonth}</p>
+        <f:form.hidden property="mymonth" value="{newMyday.mymonth.uid}" />
+    </f:if>
+    
+    <label for="daynumber">Day number</label>
+    <f:form.textfield property="daynumber" id="daynumber" />
     <f:render partial="Myday/FormFields" />
     <f:form.submit value="Create new" />
     </f:form>
 </f:section>
 </html>
+
