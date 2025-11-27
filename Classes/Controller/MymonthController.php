@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace MCplamen\Monthlyschedule\Controller;
+namespace Mcplamen\Monthlyschedule\Controller;
 
-use MCplamen\Monthlyschedule\Domain\Model\Mymonth;
-use MCplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
+use Mcplamen\Monthlyschedule\Domain\Model\Mymonth;
+use Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class MymonthController extends ActionController

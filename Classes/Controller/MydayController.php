@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace MCplamen\Monthlyschedule\Controller;
+namespace Mcplamen\Monthlyschedule\Controller;
 
-use MCplamen\Monthlyschedule\Domain\Model\Myday;
-use MCplamen\Monthlyschedule\Domain\Repository\MydayRepository;
-use MCplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
+use Mcplamen\Monthlyschedule\Domain\Model\Myday;
+use Mcplamen\Monthlyschedule\Domain\Repository\MydayRepository;
+use Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 
@@ -87,19 +87,22 @@ class MydayController extends ActionController
 	/**
 	 * action new
 	 *
-	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday
 	 * @param int $mymonth
 	 * @return void
 	 */
-	public function newAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday = NULL, $mymonth = 0)
+	public function newAction($mymonth = 0)
 	{
+		$newMyday = null;
+		
 		// Ако има подаден mymonth UID, зареди обекта
-		if ($mymonth > 0 && $newMyday === NULL) {
+		if ($mymonth > 0) {
 			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
 			
-			// Създай нов Myday обект и задай релацията
-			$newMyday = $this->objectManager->get(\Mcplamen\Monthlyschedule\Domain\Model\Myday::class);
-			$newMyday->setMymonth($mymonthObject);
+			if ($mymonthObject) {
+				// Създай нов Myday обект и задай релацията
+				$newMyday = new Myday();  // <-- Използвай краткия вариант
+				$newMyday->setMymonth($mymonthObject);
+			}
 		}
 		
 		$this->view->assign('newMyday', $newMyday);

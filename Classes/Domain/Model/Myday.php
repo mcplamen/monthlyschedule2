@@ -225,4 +225,15 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     {
         $this->timeslotend = $timeslotend;
     }
+	
+	/**
+	 * Sets the mymonth
+	 *
+	 * @param \MCplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
+	 * @return void
+	 */
+	public function setMymonth(\MCplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth)
+	{
+		$this->mymonth = $mymonth;
+	}
 }

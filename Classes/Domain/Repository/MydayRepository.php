@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace McPlamen\Monthlyschedule\Domain\Repository;
+namespace Mcplamen\Monthlyschedule\Domain\Repository;
 
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
