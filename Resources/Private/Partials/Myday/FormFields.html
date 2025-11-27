@@ -3,15 +3,33 @@
 <label for="dayname">
 	<f:translate key="tx_monthlyschedule_domain_model_myday.dayname" />
 </label><br />
-	<f:form.textfield property="dayname" id="dayname" /><br />
+	<f:form.textfield 
+        property="dayname" 
+        id="dayname" 
+        type="number" 
+        additionalAttributes="{min: '1', max: '31', step: '1'}" 
+    />
+	
+	<br />
 <label for="timeslot">
 	<f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" />
 </label><br />
-	<f:form.textfield property="timeslot" id="timeslot" /><br />
+	    <f:form.textfield 
+        property="timeslot" 
+        id="timeslot" 
+        type="time"
+    />
+	<br />
 <label for="timeslotend">
 	<f:translate key="tx_monthlyschedule_domain_model_myday.timeslotend" />
+
 </label><br />
-	<f:form.textfield property="timeslotend" id="timeslotend" /><br />	
+		<f:form.textfield 
+        property="timeslotend" 
+        id="timeslotend" 
+        type="time"
+    />
+	<br />	
 <label for="confirm">
 	<f:translate key="tx_monthlyschedule_domain_model_myday.confirm" />
 </label><br />

@@ -24,10 +24,13 @@ Otherwise your changes will be overwritten the next time you save the extension 
 	    <f:if condition="{newMyday.mymonth}">
         <p><strong>Adding day to month:</strong> {newMyday.mymonth.mymonth}</p>
         <f:form.hidden property="mymonth" value="{newMyday.mymonth.uid}" />
+		
     </f:if>
-    
+    <f:comment>
     <label for="daynumber">Day number</label>
+	
     <f:form.textfield property="daynumber" id="daynumber" />
+	</f:comment>
     <f:render partial="Myday/FormFields" />
     <f:form.submit value="Create new" />
     </f:form>

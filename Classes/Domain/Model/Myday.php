@@ -20,12 +20,12 @@ namespace Mcplamen\Monthlyschedule\Domain\Model;
 class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 {
 
-    /**
-     * dayname
-     *
-     * @var string
-     */
-    protected $dayname = '';
+	/**
+	 * dayname
+	 *
+	 * @var int
+	 */
+	protected $dayname = 0;
 
     /**
      * timeslot
@@ -74,21 +74,22 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      *
      * @return string
      */
-    public function getDayname()
-    {
-        return $this->dayname;
-    }
+	 
+	/**
+	 * @return int
+	 */
+	public function getDayname(): int
+	{
+		return $this->dayname;
+	}
 
-    /**
-     * Sets the dayname
-     *
-     * @param string $dayname
-     * @return void
-     */
-    public function setDayname(string $dayname)
-    {
-        $this->dayname = $dayname;
-    }
+	/**
+	 * @param int $dayname
+	 */
+	public function setDayname(int $dayname): void
+	{
+		$this->dayname = $dayname;
+	}
 
     /**
      * Returns the timeslot
@@ -227,12 +228,22 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 	
 	/**
+	 * Returns the mymonth
+	 *
+	 * @return \Mcplamen\Monthlyschedule\Domain\Model\Mymonth|null
+	 */
+	public function getMymonth()
+	{
+		return $this->mymonth;
+	}
+
+	/**
 	 * Sets the mymonth
 	 *
-	 * @param \MCplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
 	 * @return void
 	 */
-	public function setMymonth(\MCplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth)
+	public function setMymonth(\Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth = null)
 	{
 		$this->mymonth = $mymonth;
 	}
