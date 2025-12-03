@@ -76,6 +76,11 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      */
 	 
 	/**
+     * @var \Mcplamen\Monthlyschedule\Domain\Model\Mymonth
+     */
+    protected $mymonth = null; 
+	 
+	/**
 	 * @return int
 	 */
 	public function getDayname(): int
@@ -247,4 +252,6 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 	{
 		$this->mymonth = $mymonth;
 	}
+	
+	
 }
