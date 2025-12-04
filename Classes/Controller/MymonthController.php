@@ -33,7 +33,9 @@ class MymonthController extends ActionController
      */
     public function indexAction(): \Psr\Http\Message\ResponseInterface
     {
-        return $this->htmlResponse();
+        $mymonths = $this->mymonthRepository->findAll();
+        $this->view->assign('mymonths', $mymonths);
+		return $this->htmlResponse();
     }
 
     /**
