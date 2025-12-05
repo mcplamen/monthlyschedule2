@@ -76,63 +76,39 @@ Otherwise your changes will be overwritten the next time you save the extension 
         <div class="existing-days-sidebar">
             <h3>Съществуващи дни за месеца</h3>
             
-            <f:if condition="{existingDays}">
+            <f:if condition="{mydays}">
                 <f:then>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Dayname</th>
-                                    <th>Timeslot</th>
-                                    <th>Timeslotend</th>
-                                    <th>Confirm</th>
-                                    <th>Person</th>
-                                    <th>Email</th>
-                                    <th>Topic</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <f:for each="{existingDays}" as="myday">
-                                    <tr>
-                                        <td>{myday.dayname}</td>
-                                        <td>{myday.timeslot}</td>
-                                        <td>{myday.timeslotend}</td>
-                                        <td>
-                                            <f:if condition="{myday.confirm}">
-                                                <span class="badge badge-success">✓</span>
-                                            </f:if>
-                                        </td>
-                                        <td>{myday.person}</td>
-                                        <td>{myday.email}</td>
-                                        <td>{myday.topic}</td>
-                                        <td>
-                                            <f:link.action 
-                                                action="edit" 
-                                                arguments="{myday: myday.uid}"
-                                                class="btn btn-sm btn-warning">
-                                                Edit
-                                            </f:link.action>
-                                        </td>
-                                        <td>
-                                            <f:link.action 
-                                                action="delete" 
-                                                arguments="{myday: myday.uid}"
-                                                class="btn btn-sm btn-danger">
-                                                Delete
-                                            </f:link.action>
-                                        </td>
-                                    </tr>
-                                </f:for>
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="tx_monthlyschedule">
+                        <tr>
+                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.dayname" /></th>
+                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" /></th>
+                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.confirm" /></th>
+                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.person" /></th>
+                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.email" /></th>
+                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.topic" /></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                        <f:for each="{mydays}" as="myday">
+                            <tr>
+                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.dayname}</f:link.action></td>
+                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.timeslot}</f:link.action></td>
+                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.confirm}</f:link.action></td>
+                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.person}</f:link.action></td>
+                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.email}</f:link.action></td>
+                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.topic}</f:link.action></td>
+                                <td><f:link.action action="edit" arguments="{myday : myday.uid}">Edit</f:link.action></td>
+                                <td><f:link.action action="delete" arguments="{myday : myday.uid}">Delete</f:link.action></td>
+                            </tr>
+                        </f:for>
+                    </table>
                 </f:then>
                 <f:else>
-                    <p class="no-data">Все още няма създадени дни за този месец nali.</p>
+                    <p class="no-data">Все още няма създадени дни за този месец.</p>
                 </f:else>
             </f:if>
+        </div>
+    </div>
         </div>
     </div>        </div>
 			

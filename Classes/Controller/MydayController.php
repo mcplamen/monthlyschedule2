@@ -92,35 +92,31 @@ class MydayController extends ActionController
 	 */
 	public function newAction($mymonth = 0)
 	{
-		// Зареждаме mymonth обекта
 		$mymonthObject = null;
-		$existingDays = [];
+		$mydays = []; // ВАЖНО: Използваме 'mydays' както в List.html
 		
 		if ($mymonth > 0) {
 			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
 			
 			if ($mymonthObject !== null) {
-				// Вземаме вече създадените дни за този месец директно от базата
+				// Вземаме дните директно от базата
 				$connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
 					\TYPO3\CMS\Core\Database\ConnectionPool::class
 				);
 				$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_monthlyschedule_domain_model_myday');
 				
-				$existingDays = $queryBuilder
+				// Премахваме WHERE условието за deleted, ако го няма в базата
+				$mydays = $queryBuilder
 					->select('*')
 					->from('tx_monthlyschedule_domain_model_myday')
 					->where(
 						$queryBuilder->expr()->eq(
 							'mymonth', 
 							$queryBuilder->createNamedParameter($mymonth, \PDO::PARAM_INT)
-						),
-						$queryBuilder->expr()->eq(
-							'deleted',
-							$queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
 						)
 					)
 					->orderBy('dayname', 'ASC')
-					->execute()
+					->executeQuery()
 					->fetchAllAssociative();
 			}
 		}
@@ -128,7 +124,7 @@ class MydayController extends ActionController
 		$this->view->assignMultiple([
 			'mymonth' => $mymonth,
 			'mymonthObject' => $mymonthObject,
-			'existingDays' => $existingDays
+			'mydays' => $mydays // ВАЖНО: Използваме 'mydays'
 		]);
 	}
 
