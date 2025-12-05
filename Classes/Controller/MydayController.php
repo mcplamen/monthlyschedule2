@@ -92,57 +92,36 @@ class MydayController extends ActionController
 	 */
 	public function newAction($mymonth = 0)
 	{
+		// Зареждаме mymonth обекта
 		$mymonthObject = null;
 		$existingDays = [];
 		
 		if ($mymonth > 0) {
-			// Зареждаме mymonth обекта
 			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
 			
 			if ($mymonthObject !== null) {
-				// Опция 1: Използваме repository с правилни настройки
-				$query = $this->mydayRepository->createQuery();
-				$querySettings = $query->getQuerySettings();
-				$querySettings->setRespectStoragePage(false);
-				$querySettings->setIgnoreEnableFields(false);
-				
-				$query->matching(
-					$query->equals('mymonth', $mymonth)
+				// Вземаме вече създадените дни за този месец директно от базата
+				$connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+					\TYPO3\CMS\Core\Database\ConnectionPool::class
 				);
+				$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_monthlyschedule_domain_model_myday');
 				
-				$query->setOrderings([
-					'dayname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
-				]);
-				
-				$existingDays = $query->execute();
-				
-				// Опция 2: Ако горното не работи, използваме raw SQL
-				if ($existingDays->count() === 0) {
-					$connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
-					$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_monthlyschedule_domain_model_myday');
-					
-					$rawDays = $queryBuilder
-						->select('*')
-						->from('tx_monthlyschedule_domain_model_myday')
-						->where(
-							$queryBuilder->expr()->eq('mymonth', $queryBuilder->createNamedParameter($mymonth, \PDO::PARAM_INT))
+				$existingDays = $queryBuilder
+					->select('*')
+					->from('tx_monthlyschedule_domain_model_myday')
+					->where(
+						$queryBuilder->expr()->eq(
+							'mymonth', 
+							$queryBuilder->createNamedParameter($mymonth, \PDO::PARAM_INT)
+						),
+						$queryBuilder->expr()->eq(
+							'deleted',
+							$queryBuilder->createNamedParameter(0, \PDO::PARAM_INT)
 						)
-						->orderBy('dayname', 'ASC')
-						->execute()
-						->fetchAllAssociative();
-					
-					// Debug за raw SQL
-					\TYPO3\CMS\Core\Utility\DebugUtility::debug([
-						'mymonth' => $mymonth,
-						'raw_sql_results' => count($rawDays),
-						'raw_data' => $rawDays
-					], 'Raw SQL Debug');
-					
-					// Ако има резултати от raw SQL, използваме ги
-					if (!empty($rawDays)) {
-						$existingDays = $rawDays;
-					}
-				}
+					)
+					->orderBy('dayname', 'ASC')
+					->execute()
+					->fetchAllAssociative();
 			}
 		}
 		
@@ -152,6 +131,8 @@ class MydayController extends ActionController
 			'existingDays' => $existingDays
 		]);
 	}
+
+
 	/**
 	 * Получава име на ден на български
 	 * 
