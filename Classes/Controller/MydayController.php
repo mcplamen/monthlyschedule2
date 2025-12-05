@@ -92,30 +92,58 @@ class MydayController extends ActionController
 	 */
 	public function newAction($mymonth = 0)
 	{
-		// Зареждаме mymonth обекта
 		$mymonthObject = null;
 		$existingDays = [];
 		
 		if ($mymonth > 0) {
+			// Зареждаме mymonth обекта
 			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
 			
-			// Вземаме всички вече създадени дни за този месец
 			if ($mymonthObject !== null) {
-				$existingDays = $this->mydayRepository->findByMymonth($mymonthObject);
+				// Опция 1: Използваме repository с правилни настройки
+				$query = $this->mydayRepository->createQuery();
+				$querySettings = $query->getQuerySettings();
+				$querySettings->setRespectStoragePage(false);
+				$querySettings->setIgnoreEnableFields(false);
 				
-				// Ако repository методът не съществува, можеш да използваш:
-				// $existingDays = $this->mydayRepository->findAll();
-				// и после да филтрираш по mymonth
+				$query->matching(
+					$query->equals('mymonth', $mymonth)
+				);
+				
+				$query->setOrderings([
+					'dayname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
+				]);
+				
+				$existingDays = $query->execute();
+				
+				// Опция 2: Ако горното не работи, използваме raw SQL
+				if ($existingDays->count() === 0) {
+					$connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class);
+					$queryBuilder = $connectionPool->getQueryBuilderForTable('tx_monthlyschedule_domain_model_myday');
+					
+					$rawDays = $queryBuilder
+						->select('*')
+						->from('tx_monthlyschedule_domain_model_myday')
+						->where(
+							$queryBuilder->expr()->eq('mymonth', $queryBuilder->createNamedParameter($mymonth, \PDO::PARAM_INT))
+						)
+						->orderBy('dayname', 'ASC')
+						->execute()
+						->fetchAllAssociative();
+					
+					// Debug за raw SQL
+					\TYPO3\CMS\Core\Utility\DebugUtility::debug([
+						'mymonth' => $mymonth,
+						'raw_sql_results' => count($rawDays),
+						'raw_data' => $rawDays
+					], 'Raw SQL Debug');
+					
+					// Ако има резултати от raw SQL, използваме ги
+					if (!empty($rawDays)) {
+						$existingDays = $rawDays;
+					}
+				}
 			}
-		}
-		
-		// Сортираме дните във възходящ ред по dayname
-		if (!empty($existingDays)) {
-			$existingDaysArray = $existingDays->toArray();
-			usort($existingDaysArray, function($a, $b) {
-				return strcmp($a->getDayname(), $b->getDayname());
-			});
-			$existingDays = $existingDaysArray;
 		}
 		
 		$this->view->assignMultiple([
@@ -124,7 +152,6 @@ class MydayController extends ActionController
 			'existingDays' => $existingDays
 		]);
 	}
-
 	/**
 	 * Получава име на ден на български
 	 * 

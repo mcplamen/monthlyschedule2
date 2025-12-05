@@ -17,6 +17,16 @@ Otherwise your changes will be overwritten the next time you save the extension 
 	
 	<div class="row">
 		<div class="col-lg-6 col-md-12 col-12">
+		
+		<!-- Debug информация -->
+<div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
+    <strong>Debug:</strong><br>
+    Mymonth UID: {mymonth}<br>
+    Mymonth Object: <f:if condition="{mymonthObject}">Зареден</f:if><br>
+    Existing Days Count: <f:count subject="{existingDays}" /><br>
+    <f:debug>{existingDays}</f:debug>
+</div>
+		
 			    <h1>New Myday</h1>
 
 				<f:flashMessages />
@@ -63,64 +73,93 @@ Otherwise your changes will be overwritten the next time you save the extension 
 			        <div class="existing-days-sidebar">
             <h3>Съществуващи дни за месеца</h3>
             
-            <f:if condition="{existingDays}">
-                <f:then>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Dayname</th>
-                                    <th>Timeslot</th>
-                                    <th>Timeslotend</th>
-                                    <th>Confirm</th>
-                                    <th>Person</th>
-                                    <th>Email</th>
-                                    <th>Topic</th>
-                                    <th>Edit</th>
-                                    <th>Delete</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <f:for each="{existingDays}" as="myday">
-                                    <tr>
-                                        <td>{myday.dayname}</td>
-                                        <td>{myday.timeslot}</td>
-                                        <td>{myday.timeslotend}</td>
-                                        <td>
-                                            <f:if condition="{myday.confirm}">
-                                                <span class="badge badge-success">✓</span>
-                                            </f:if>
-                                        </td>
-                                        <td>{myday.person}</td>
-                                        <td>{myday.email}</td>
-                                        <td>{myday.topic}</td>
-                                        <td>
-                                            <f:link.action 
-                                                action="edit" 
-                                                arguments="{myday: myday.uid}"
-                                                class="btn btn-sm btn-warning">
-                                                Edit
-                                            </f:link.action>
-                                        </td>
-                                        <td>
-                                            <f:link.action 
-                                                action="delete" 
-                                                arguments="{myday: myday.uid}"
-                                                class="btn btn-sm btn-danger"
-                                                onclick="return confirm('Сигурни ли сте, че искате да изтриете този ден?')">
-                                                Delete
-                                            </f:link.action>
-                                        </td>
-                                    </tr>
-                                </f:for>
-                            </tbody>
-                        </table>
-                    </div>
-                </f:then>
-                <f:else>
-                    <p class="no-data">Все още няма създадени дни за този месец.</p>
-                </f:else>
-            </f:if>
+			 <f:if condition="{existingDays}">
+				<f:then>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Dayname</th>
+									<th>Timeslot</th>
+									<th>Timeslotend</th>
+									<th>Confirm</th>
+									<th>Person</th>
+									<th>Email</th>
+									<th>Topic</th>
+									<th>Edit</th>
+									<th>Delete</th>
+								</tr>
+							</thead>
+							<tbody>
+								<f:for each="{existingDays}" as="myday">
+									<tr>
+										<td>
+											<f:if condition="{myday.dayname}">
+												<f:then>{myday.dayname}</f:then>
+												<f:else>{myday.dayname}</f:else>
+											</f:if>
+										</td>
+										<td>
+											<f:if condition="{myday.timeslot}">
+												<f:then>{myday.timeslot}</f:then>
+												<f:else>{myday.timeslot}</f:else>
+											</f:if>
+										</td>
+										<td>
+											<f:if condition="{myday.timeslotend}">
+												<f:then>{myday.timeslotend}</f:then>
+												<f:else>{myday.timeslotend}</f:else>
+											</f:if>
+										</td>
+										<td>
+											<f:if condition="{myday.confirm}">
+												<span class="badge badge-success">✓</span>
+											</f:if>
+										</td>
+										<td>
+											<f:if condition="{myday.person}">
+												<f:then>{myday.person}</f:then>
+												<f:else>{myday.person}</f:else>
+											</f:if>
+										</td>
+										<td>
+											<f:if condition="{myday.email}">
+												<f:then>{myday.email}</f:then>
+												<f:else>{myday.email}</f:else>
+											</f:if>
+										</td>
+										<td>
+											<f:if condition="{myday.topic}">
+												<f:then>{myday.topic}</f:then>
+												<f:else>{myday.topic}</f:else>
+											</f:if>
+										</td>
+										<td>
+											<f:link.action 
+												action="edit" 
+												arguments="{myday: '{myday.uid}'}"
+												class="btn btn-sm btn-warning">
+												Edit
+											</f:link.action>
+										</td>
+										<td>
+											<f:link.action 
+												action="delete" 
+												arguments="{myday: '{myday.uid}'}"
+												class="btn btn-sm btn-danger">
+												Delete
+											</f:link.action>
+										</td>
+									</tr>
+								</f:for>
+							</tbody>
+						</table>
+					</div>
+				</f:then>
+				<f:else>
+					<p class="no-data">Все още няма създадени дни за този месец.</p>
+				</f:else>
+			</f:if>
         </div>
 			
 		</div>

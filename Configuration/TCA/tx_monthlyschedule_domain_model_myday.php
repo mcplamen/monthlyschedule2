@@ -178,10 +178,16 @@ return [
             ],
         ],
     
-        'mymonth' => [
-            'config' => [
-                'type' => 'passthrough',
-            ],
-        ],
+		'mymonth' => [
+			'exclude' => true,
+			'label' => 'Month',
+			'config' => [
+				'type' => 'select',
+				'renderType' => 'selectSingle',
+				'foreign_table' => 'tx_monthlyschedule_domain_model_mymonth',
+				'minitems' => 0,
+				'maxitems' => 1,
+			],
+		],
     ],
 ];
