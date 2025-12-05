@@ -14,26 +14,132 @@ in /Configuration/ExtensionBuilder/settings.yaml:
 Otherwise your changes will be overwritten the next time you save the extension in the extension builder
 
 <f:section name="content">
-    <h1>New Myday</h1>
-
-    <f:flashMessages />
-
-    <f:render partial="FormErrors" />
-
-    <f:form action="create" name="newMyday" object="{newMyday}" pluginName="Monthlyschedule">
-	    <f:if condition="{newMyday.mymonth}">
-        <p><strong>Adding day to month:</strong> {newMyday.mymonth.mymonth}</p>
-        <f:form.hidden property="mymonth" value="{newMyday.mymonth.uid}" />
-		
-    </f:if>
-    <f:comment>
-    <label for="daynumber">Day number</label>
 	
-    <f:form.textfield property="daynumber" id="daynumber" />
-	</f:comment>
-    <f:render partial="Myday/FormFields" />
-    <f:form.submit value="Create new" />
-    </f:form>
+	<div class="row">
+		<div class="col-lg-6 col-md-12 col-12">
+			    <h1>New Myday</h1>
+
+				<f:flashMessages />
+
+				<f:render partial="FormErrors" />
+
+				<f:form action="create" name="newMyday" object="{newMyday}" pluginName="Monthlyschedule">
+					<f:if condition="{newMyday.mymonth}">
+					<p><strong>Adding day to month:</strong> {newMyday.mymonth.mymonth}</p>
+					<f:form.hidden property="mymonth" value="{newMyday.mymonth.uid}" />
+					
+				</f:if>
+				<f:comment>
+				<label for="daynumber">Day number</label>
+				
+				<f:form.textfield property="daynumber" id="daynumber" />
+				</f:comment>
+				<f:render partial="Myday/FormFields" />
+				<f:form.submit value="Create new" />
+				</f:form>
+		</div>
+		<div class="col-lg-6 col-md-12 col-12">
+			            <h3>Дни от месеца:</h3>
+            
+            <f:if condition="{monthDays}">
+                <f:then>
+                    <div class="days-list">
+                        <f:for each="{monthDays}" as="dayInfo">
+                            <div class="day-item" onclick="selectDay('{dayInfo.dateString}', '{dayInfo.formatted}')">
+                                <div class="day-number">{dayInfo.day}</div>
+                                <div class="day-info">
+                                    <span class="day-name">{dayInfo.dayName}</span>
+                                    <span class="day-date">{dayInfo.formatted}</span>
+                                </div>
+                            </div>
+                        </f:for>
+                    </div>
+                </f:then>
+                <f:else>
+                    <p>Няма налични дни за показване.</p>
+                </f:else>
+            </f:if>
+			
+			        <div class="existing-days-sidebar">
+            <h3>Съществуващи дни за месеца</h3>
+            
+            <f:if condition="{existingDays}">
+                <f:then>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Dayname</th>
+                                    <th>Timeslot</th>
+                                    <th>Timeslotend</th>
+                                    <th>Confirm</th>
+                                    <th>Person</th>
+                                    <th>Email</th>
+                                    <th>Topic</th>
+                                    <th>Edit</th>
+                                    <th>Delete</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <f:for each="{existingDays}" as="myday">
+                                    <tr>
+                                        <td>{myday.dayname}</td>
+                                        <td>{myday.timeslot}</td>
+                                        <td>{myday.timeslotend}</td>
+                                        <td>
+                                            <f:if condition="{myday.confirm}">
+                                                <span class="badge badge-success">✓</span>
+                                            </f:if>
+                                        </td>
+                                        <td>{myday.person}</td>
+                                        <td>{myday.email}</td>
+                                        <td>{myday.topic}</td>
+                                        <td>
+                                            <f:link.action 
+                                                action="edit" 
+                                                arguments="{myday: myday.uid}"
+                                                class="btn btn-sm btn-warning">
+                                                Edit
+                                            </f:link.action>
+                                        </td>
+                                        <td>
+                                            <f:link.action 
+                                                action="delete" 
+                                                arguments="{myday: myday.uid}"
+                                                class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Сигурни ли сте, че искате да изтриете този ден?')">
+                                                Delete
+                                            </f:link.action>
+                                        </td>
+                                    </tr>
+                                </f:for>
+                            </tbody>
+                        </table>
+                    </div>
+                </f:then>
+                <f:else>
+                    <p class="no-data">Все още няма създадени дни за този месец.</p>
+                </f:else>
+            </f:if>
+        </div>
+			
+		</div>
+	</div>
+	
+        <script>
+        function selectDay(dateString, formatted) {
+            document.getElementById('dayname').value = dateString;
+            
+            // Премахваме активния клас от всички дни
+            document.querySelectorAll('.day-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+            
+            // Добавяме активен клас на избрания ден
+            event.currentTarget.classList.add('active');
+        }
+		</script>
 </f:section>
 </html>
 
+		

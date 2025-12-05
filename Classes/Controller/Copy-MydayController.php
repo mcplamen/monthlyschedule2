@@ -92,58 +92,21 @@ class MydayController extends ActionController
 	 */
 	public function newAction($mymonth = 0)
 	{
-		// Зареждаме mymonth обекта
-		$mymonthObject = null;
-		$existingDays = [];
+		$newMyday = null;
 		
+		// Ако има подаден mymonth UID, зареди обекта
 		if ($mymonth > 0) {
 			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
 			
-			// Вземаме всички вече създадени дни за този месец
-			if ($mymonthObject !== null) {
-				$existingDays = $this->mydayRepository->findByMymonth($mymonthObject);
-				
-				// Ако repository методът не съществува, можеш да използваш:
-				// $existingDays = $this->mydayRepository->findAll();
-				// и после да филтрираш по mymonth
+			if ($mymonthObject) {
+				// Създай нов Myday обект и задай релацията
+				$newMyday = new Myday();  // <-- Използвай краткия вариант
+				$newMyday->setMymonth($mymonthObject);
 			}
 		}
 		
-		// Сортираме дните във възходящ ред по dayname
-		if (!empty($existingDays)) {
-			$existingDaysArray = $existingDays->toArray();
-			usort($existingDaysArray, function($a, $b) {
-				return strcmp($a->getDayname(), $b->getDayname());
-			});
-			$existingDays = $existingDaysArray;
-		}
-		
-		$this->view->assignMultiple([
-			'mymonth' => $mymonth,
-			'mymonthObject' => $mymonthObject,
-			'existingDays' => $existingDays
-		]);
-	}
-
-	/**
-	 * Получава име на ден на български
-	 * 
-	 * @param int $dayNumber
-	 * @return string
-	 */
-	private function getDayNameInBulgarian($dayNumber)
-	{
-		$days = [
-			0 => 'Неделя',
-			1 => 'Понеделник',
-			2 => 'Вторник',
-			3 => 'Сряда',
-			4 => 'Четвъртък',
-			5 => 'Петък',
-			6 => 'Събота'
-		];
-		
-		return $days[$dayNumber];
+		$this->view->assign('newMyday', $newMyday);
+		$this->view->assign('mymonth', $mymonth);
 	}
 
 	/**
