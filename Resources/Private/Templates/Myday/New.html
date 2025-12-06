@@ -25,6 +25,14 @@ Otherwise your changes will be overwritten the next time you save the extension 
     Mymonth Object: <f:if condition="{mymonthObject}">Зареден</f:if><br>
     Existing Days Count: <f:count subject="{existingDays}" /><br>
     <f:debug>{existingDays}</f:debug>
+	
+	<!-- DEBUG В TEMPLATE -->
+    <div style="background: lightblue; padding: 10px; margin: 10px;">
+        <strong>Template DEBUG:</strong><br>
+        Mymonth: {mymonth}<br>
+        Mydays is set: <f:if condition="{mydays}">YES</f:if><f:if condition="{mydays}"><f:else>NO</f:else></f:if><br>
+        Count: {mydays -> f:count()}<br>
+    </div>
 </div>
 		
 			    <h1>New Myday</h1>
@@ -70,49 +78,25 @@ Otherwise your changes will be overwritten the next time you save the extension 
                 </f:else>
             </f:if>
 			
-			        <div class="existing-days-sidebar">
-            <h3>Съществуващи дни за месеца</h3>
-            
-        <div class="existing-days-sidebar">
-            <h3>Съществуващи дни за месеца</h3>
-            
-            <f:if condition="{mydays}">
-                <f:then>
-                    <table class="tx_monthlyschedule">
-                        <tr>
-                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.dayname" /></th>
-                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" /></th>
-                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.confirm" /></th>
-                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.person" /></th>
-                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.email" /></th>
-                            <th><f:translate key="tx_monthlyschedule_domain_model_myday.topic" /></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                        <f:for each="{mydays}" as="myday">
-                            <tr>
-                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.dayname}</f:link.action></td>
-                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.timeslot}</f:link.action></td>
-                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.confirm}</f:link.action></td>
-                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.person}</f:link.action></td>
-                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.email}</f:link.action></td>
-                                <td><f:link.action action="show" arguments="{myday : myday.uid}">{myday.topic}</f:link.action></td>
-                                <td><f:link.action action="edit" arguments="{myday : myday.uid}">Edit</f:link.action></td>
-                                <td><f:link.action action="delete" arguments="{myday : myday.uid}">Delete</f:link.action></td>
-                            </tr>
-                        </f:for>
-                    </table>
-                </f:then>
-                <f:else>
-                    <p class="no-data">Все още няма създадени дни за този месец.</p>
-                </f:else>
-            </f:if>
+					</div>
+		<div class="col-lg-6 col-md-12 col-12">
+			<div class="existing-days-sidebar">
+				<f:if condition="{existingDays}">
+					<ul>
+						<f:for each="{existingDays}" as="day">
+							<li>
+								Day {day.daynumber} – {day.title}
+							</li>
+						</f:for>
+					</ul>
+				</f:if>
+
+				<f:if condition="!{existingDays}">
+					<p>No days for this month yet.</p>
+				</f:if>
         </div>
     </div>
-        </div>
-    </div>        </div>
-			
-		</div>
+    
 	</div>
 	
         <script>

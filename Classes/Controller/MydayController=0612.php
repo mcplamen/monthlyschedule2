@@ -85,26 +85,51 @@ class MydayController extends ActionController
     }
 
 	/**
+	 * action new
+	 *
 	 * @param int $mymonth
+	 * @return void
 	 */
-	public function newAction(int $mymonth)
+	public function newAction($mymonth = 0)
 	{
-		// 1. Зареждаме избрания месец
-		$month = $this->myMonthRepository->findByUid($mymonth);
-
-		// 2. Всички дни към този месец, подредени възходящо
-		$existingDays = $this->myDayRepository->findByMyMonthSorted($month);
-
-		// 3. Празен MyDay за формата
-		$newDay = new \Mcplamen\Monthlyschedule\Domain\Model\MyDay();
-
+		$mymonthObject = null;
+		$mydays = null;
+		
+		if ($mymonth > 0) {
+			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
+		}
+		
+		// Опростен DEBUG - директно извеждане
+		if ($mymonth > 0) {
+			// Използваме QueryBuilder
+			$connectionPool = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+				\TYPO3\CMS\Core\Database\ConnectionPool::class
+			);
+			$connection = $connectionPool->getConnectionForTable('tx_monthlyschedule_domain_model_myday');
+			
+			// Прост SQL query
+			$sql = 'SELECT * FROM tx_monthlyschedule_domain_model_myday WHERE mymonth = ? ORDER BY dayname ASC';
+			$mydays = $connection->fetchAllAssociative($sql, [$mymonth]);
+			
+			// DEBUG - показва колко записа има
+			echo '<div style="background: yellow; padding: 10px; margin: 10px;">';
+			echo 'DEBUG INFO:<br>';
+			echo 'Mymonth UID: ' . $mymonth . '<br>';
+			echo 'Count mydays: ' . count($mydays) . '<br>';
+			echo 'Is array: ' . (is_array($mydays) ? 'YES' : 'NO') . '<br>';
+			if (is_array($mydays) && count($mydays) > 0) {
+				echo 'First record dayname: ' . $mydays[0]['dayname'] . '<br>';
+			}
+			echo '</div>';
+		}
+		
 		$this->view->assignMultiple([
-			'month' => $month,
-			'newDay' => $newDay,
-			'existingDays' => $existingDays
+			'mymonth' => $mymonth,
+			'mymonthObject' => $mymonthObject,
+			'mydays' => $mydays
 		]);
 	}
-	
+
 	/**
 	 * Получава име на ден на български
 	 * 

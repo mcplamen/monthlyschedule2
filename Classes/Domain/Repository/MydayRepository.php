@@ -31,4 +31,20 @@ class MydayRepository extends Repository
 		$query->setOrderings(['dayname' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING]);
 		return $query->execute();
 	}
+	
+	public function findByMyMonthSorted(\Mcplamen\Monthlyschedule\Domain\Model\MyMonth $month)
+	{
+		$query = $this->createQuery();
+
+		$query->matching(
+			$query->equals('mymonth', $month)
+		);
+
+		$query->setOrderings([
+			'daynumber' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING
+		]);
+
+		return $query->execute();
+	}
+
 }
