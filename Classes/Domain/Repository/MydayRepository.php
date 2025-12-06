@@ -19,7 +19,7 @@ class MydayRepository extends Repository
 	/**
 	 * Find all days by mymonth
 	 *
-	 * @param \Plamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
 	 * @return \TYPO3\CMS\Extbase\Persistence\QueryResultInterface
 	 */
 	public function findByMymonth($mymonth)
