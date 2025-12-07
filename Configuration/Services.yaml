@@ -1,0 +1,12 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Mcplamen\Monthlyschedule\:
+    resource: '../Classes/*'
+
+  Mcplamen\Monthlyschedule\Controller\:
+    resource: '../Classes/Controller'
+    tags: ['backend.controller']
