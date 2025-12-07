@@ -32,7 +32,7 @@ class MydayRepository extends Repository
 		return $query->execute();
 	}
 	
-	public function findByMyMonthSorted(\Mcplamen\Monthlyschedule\Domain\Model\MyMonth $month)
+	public function findByMymonthSorted(\Mcplamen\Monthlyschedule\Domain\Model\Mymonth $month)
 	{
 		$query = $this->createQuery();
 

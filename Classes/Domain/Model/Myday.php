@@ -75,10 +75,12 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
      * @return string
      */
 	 
-	/**
+    /**
+     * mymonth
+     *
      * @var \Mcplamen\Monthlyschedule\Domain\Model\Mymonth
      */
-    protected $mymonth = null; 
+    protected $mymonth = null;
 	 
 	/**
 	 * @return int
@@ -235,7 +237,7 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 	/**
 	 * Returns the mymonth
 	 *
-	 * @return \Mcplamen\Monthlyschedule\Domain\Model\Mymonth|null
+	 * @return \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
 	 */
 	public function getMymonth()
 	{

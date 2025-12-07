@@ -93,7 +93,7 @@ class MydayController extends ActionController
 		$month = $this->myMonthRepository->findByUid($mymonth);
 
 		// 2. Всички дни към този месец, подредени възходящо
-		$existingDays = $this->myDayRepository->findByMyMonthSorted($month);
+		$existingDays = $this->myDayRepository->findByMymonthSorted($month);
 
 		// 3. Празен MyDay за формата
 		$newDay = new \Mcplamen\Monthlyschedule\Domain\Model\MyDay();

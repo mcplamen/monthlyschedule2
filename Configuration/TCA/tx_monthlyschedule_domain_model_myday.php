@@ -180,11 +180,12 @@ return [
     
 		'mymonth' => [
 			'exclude' => true,
-			'label' => 'Month',
+			'label' => 'LLL:EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf:tx_monthlyschedule_domain_model_myday.mymonth',
 			'config' => [
 				'type' => 'select',
 				'renderType' => 'selectSingle',
 				'foreign_table' => 'tx_monthlyschedule_domain_model_mymonth',
+				'default' => 0,
 				'minitems' => 0,
 				'maxitems' => 1,
 			],
