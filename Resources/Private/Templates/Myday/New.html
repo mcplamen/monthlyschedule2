@@ -46,7 +46,7 @@
 							<tbody>
 								<f:for each="{mydays}" as="myday">
 									<tr>  
-									    <td> Day of the week, i.e. Friday following day and month </td>
+									    <td>{newMyday.weekday} </td>
 										<td><f:link.action action="show" arguments="{myday : myday}">{myday.dayname}</f:link.action></td>
 										<td>{myday.timeslot}</td>
 										<td>

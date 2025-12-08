@@ -255,5 +255,29 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 		$this->mymonth = $mymonth;
 	}
 	
+	public function getWeekday(): string
+{
+    // Ако нямаме свързан Mymonth → няма как да изчислим датата
+    if ($this->getMymonth() === null || !$this->getDay()) {
+        return '';
+    }
+
+    $month = $this->getMymonth()->getMonth();
+    $year  = $this->getMymonth()->getYear();
+    $day   = $this->getDay();
+
+    try {
+        // Пример: 14-02-2025
+        $dateString = sprintf('%04d-%02d-%02d', $year, $month, $day);
+
+        $date = new \DateTime($dateString);
+
+        return $date->format('l'); // Monday, Tuesday...
+    } catch (\Exception $e) {
+        return '';
+    }
+}
+
+	
 	
 }
