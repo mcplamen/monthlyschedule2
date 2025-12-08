@@ -234,49 +234,25 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
         $this->timeslotend = $timeslotend;
     }
 	
-	/**
-	 * Returns the mymonth
-	 *
-	 * @return \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
-	 */
-	public function getMymonth()
+	public function getWeekdayDe(): string
 	{
-		return $this->mymonth;
+		$date = sprintf('%04d-%02d-%02d', $this->year, $this->month, $this->dayname);
+
+		$weekdaysDe = [
+			'Monday' => 'Montag',
+			'Tuesday' => 'Dienstag',
+			'Wednesday' => 'Mittwoch',
+			'Thursday' => 'Donnerstag',
+			'Friday' => 'Freitag',
+			'Saturday' => 'Samstag',
+			'Sunday' => 'Sonntag',
+		];
+
+		$english = date('l', strtotime($date));
+
+		return $weekdaysDe[$english] ?? $english;
 	}
 
-	/**
-	 * Sets the mymonth
-	 *
-	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
-	 * @return void
-	 */
-	public function setMymonth(\Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth = null)
-	{
-		$this->mymonth = $mymonth;
-	}
-	
-	public function getWeekday(): string
-{
-    // Ако нямаме свързан Mymonth → няма как да изчислим датата
-    if ($this->getMymonth() === null || !$this->getDay()) {
-        return '';
-    }
-
-    $month = $this->getMymonth()->getMonth();
-    $year  = $this->getMymonth()->getYear();
-    $day   = $this->getDay();
-
-    try {
-        // Пример: 14-02-2025
-        $dateString = sprintf('%04d-%02d-%02d', $year, $month, $day);
-
-        $date = new \DateTime($dateString);
-
-        return $date->format('l'); // Monday, Tuesday...
-    } catch (\Exception $e) {
-        return '';
-    }
-}
 
 	
 	

@@ -46,7 +46,12 @@
 							<tbody>
 								<f:for each="{mydays}" as="myday">
 									<tr>  
-									    <td>{newMyday.weekday} </td>
+									    <td>
+										<f:comment>
+										<f:format.date format="l">{myday.mymonth.year}-{myday.mymonth.month}-{myday.dayname}</f:format.date>
+										</f:comment>
+{myday.weekdayDe}											
+										</td>
 										<td><f:link.action action="show" arguments="{myday : myday}">{myday.dayname}</f:link.action></td>
 										<td>{myday.timeslot}</td>
 										<td>
