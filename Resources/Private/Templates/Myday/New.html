@@ -1,141 +1,79 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
 <f:layout name="Default" />
 
-This template displays a NEW form for the current domain object.
-
-If you modify this template, do not forget to change the overwrite settings
-in /Configuration/ExtensionBuilder/settings.yaml:
-  Resources:
-    Private:
-      Templates:
-        Myday:
-          New.html: keep
-
-Otherwise your changes will be overwritten the next time you save the extension in the extension builder
-
 <f:section name="content">
 	
 	<div class="row">
+		<!-- Форма за нов ден (вляво) -->
 		<div class="col-lg-6 col-md-12 col-12">
-		
-		<!-- Debug информация -->
-<div style="background: #f0f0f0; padding: 10px; margin: 10px 0;">
-    <strong>Debug:</strong><br>
-    Mymonth UID: {mymonth}<br>
-    Mymonth Object: <f:if condition="{mymonthObject}">Зареден</f:if><br>
-    Existing Days Count: <f:count subject="{existingDays}" /><br>
-    <f:debug>{existingDays}</f:debug>
-	
-	<!-- DEBUG В TEMPLATE -->
-    <div style="background: lightblue; padding: 10px; margin: 10px;">
-        <strong>Template DEBUG:</strong><br>
-        Mymonth: {mymonth}<br>
-        Mydays is set: <f:if condition="{mydays}">YES</f:if><f:if condition="{mydays}"><f:else>NO</f:else></f:if><br>
-        Count: {mydays -> f:count()}<br>
-    </div>
-</div>
-		
-			    <h1>New Myday</h1>
+			<h1>New Myday</h1>
 
-				<f:flashMessages />
+			<f:flashMessages />
 
-				<f:render partial="FormErrors" />
+			<f:render partial="FormErrors" />
 
-				<f:form action="create" name="newMyday" object="{newMyday}" pluginName="Monthlyschedule">
-					<f:if condition="{newMyday.mymonth}">
+			<f:form action="create" name="newMyday" object="{newMyday}" pluginName="Monthlyschedule">
+				<f:if condition="{newMyday.mymonth}">
 					<p><strong>Adding day to month:</strong> {newMyday.mymonth.mymonth}</p>
 					<f:form.hidden property="mymonth" value="{newMyday.mymonth.uid}" />
-					
 				</f:if>
-				<f:comment>
-				<label for="daynumber">Day number</label>
 				
-				<f:form.textfield property="daynumber" id="daynumber" />
-				</f:comment>
 				<f:render partial="Myday/FormFields" />
 				<f:form.submit value="Create new" />
-				</f:form>
+			</f:form>
 		</div>
+		
+		<!-- Съществуващи дни за месеца (вдясно) -->
 		<div class="col-lg-6 col-md-12 col-12">
-			            <h3>Дни от месеца:</h3>
-            
-            <f:if condition="{monthDays}">
-                <f:then>
-                    <div class="days-list">
-                        <f:for each="{monthDays}" as="dayInfo">
-                            <div class="day-item" onclick="selectDay('{dayInfo.dateString}', '{dayInfo.formatted}')">
-                                <div class="day-number">{dayInfo.day}</div>
-                                <div class="day-info">
-                                    <span class="day-name">{dayInfo.dayName}</span>
-                                    <span class="day-date">{dayInfo.formatted}</span>
-                                </div>
-                            </div>
-                        </f:for>
-                    </div>
-                </f:then>
-                <f:else>
-                    <p>Няма налични дни за показване.</p>
-                </f:else>
-            </f:if>
+			<h3>Съществуващи дни за месеца</h3>
 			
+			<f:if condition="{mydays -> f:count()} > 0">
+				<f:then>
+					<div class="table-responsive">
+						<table class="tx_monthlyschedule table table-striped">
+							<thead>
+								<tr>
+									<th><f:translate key="tx_monthlyschedule_domain_model_myday.dayname" /></th>
+									<th><f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" /></th>
+									<th><f:translate key="tx_monthlyschedule_domain_model_myday.confirm" /></th>
+									<th><f:translate key="tx_monthlyschedule_domain_model_myday.person" /></th>
+									<th><f:translate key="tx_monthlyschedule_domain_model_myday.email" /></th>
+									<th><f:translate key="tx_monthlyschedule_domain_model_myday.topic" /></th>
+									<th>Actions</th>
+								</tr>
+							</thead>
+							<tbody>
+								<f:for each="{mydays}" as="myday">
+									<tr>  
+									    <td> Day of the week, i.e. Friday following day and month </td>
+										<td><f:link.action action="show" arguments="{myday : myday}">{myday.dayname}</f:link.action></td>
+										<td>{myday.timeslot}</td>
+										<td>
+											<f:if condition="{myday.confirm}">
+												<span class="badge badge-success">✓</span>
+											</f:if>
+										</td>
+										<td>{myday.person}</td>
+										<td>{myday.email}</td>
+										<td>{myday.topic}</td>
+										<td>
+											<f:link.action action="edit" arguments="{myday : myday}" class="btn btn-sm btn-warning">Edit</f:link.action>
+											<f:link.action action="delete" arguments="{myday : myday}" class="btn btn-sm btn-danger">Delete</f:link.action>
+										</td>
+									</tr>
+								</f:for>
+							</tbody>
+						</table>
 					</div>
-		<div class="col-lg-6 col-md-12 col-12">
-			<div class="existing-days-sidebar">
-            <!-- ВАЖНО: Проверяваме count вместо самия обект -->
-            <f:if condition="{mydays -> f:count()} > 0">
-                <f:then>
-                    <table class="tx_monthlyschedule">
-                        <thead>
-                            <tr>
-                                <th><f:translate key="tx_monthlyschedule_domain_model_myday.dayname" /></th>
-                                <th><f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" /></th>
-                                <th><f:translate key="tx_monthlyschedule_domain_model_myday.confirm" /></th>
-                                <th><f:translate key="tx_monthlyschedule_domain_model_myday.person" /></th>
-                                <th><f:translate key="tx_monthlyschedule_domain_model_myday.email" /></th>
-                                <th><f:translate key="tx_monthlyschedule_domain_model_myday.topic" /></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <f:for each="{mydays}" as="myday">
-                                <tr>
-                                    <td><f:link.action action="show" arguments="{myday : myday}">{myday.dayname}</f:link.action></td>
-                                    <td><f:link.action action="show" arguments="{myday : myday}">{myday.timeslot}</f:link.action></td>
-                                    <td><f:link.action action="show" arguments="{myday : myday}">{myday.confirm}</f:link.action></td>
-                                    <td><f:link.action action="show" arguments="{myday : myday}">{myday.person}</f:link.action></td>
-                                    <td><f:link.action action="show" arguments="{myday : myday}">{myday.email}</f:link.action></td>
-                                    <td><f:link.action action="show" arguments="{myday : myday}">{myday.topic}</f:link.action></td>
-                                    <td><f:link.action action="edit" arguments="{myday : myday}">Edit</f:link.action></td>
-                                    <td><f:link.action action="delete" arguments="{myday : myday}">Delete</f:link.action></td>
-                                </tr>
-                            </f:for>
-                        </tbody>
-                    </table>
-                </f:then>
-                <f:else>
-                    <p class="no-data">Все още няма създадени дни за този месец.</p>
-                </f:else>
-            </f:if>
-        </div>
-    </div>
-    
+				</f:then>
+				<f:else>
+					<p class="alert alert-info">Все още няма създадени дни за този месец.</p>
+				</f:else>
+			</f:if>
+			
+			
+		</div>
 	</div>
 	
-        <script>
-        function selectDay(dateString, formatted) {
-            document.getElementById('dayname').value = dateString;
-            
-            // Премахваме активния клас от всички дни
-            document.querySelectorAll('.day-item').forEach(function(item) {
-                item.classList.remove('active');
-            });
-            
-            // Добавяме активен клас на избрания ден
-            event.currentTarget.classList.add('active');
-        }
-		</script>
 </f:section>
 </html>
-
-		

@@ -155,4 +155,48 @@ class MydayController extends ActionController
         $this->mydayRepository->remove($myday);
         $this->redirect('list');
     }
+	
+	/**
+	 * Get day of week in English
+	 *
+	 * @param string $dayname (format: YYYY-MM-DD or just day number)
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\MyMonth $mymonthObject
+	 * @return string
+	 */
+	private function getDayOfWeek($dayname, $mymonthObject)
+	{
+		if ($mymonthObject === null) {
+			return '';
+		}
+		
+		$year = $mymonthObject->getYear();
+		$month = $mymonthObject->getMonth();
+		
+		// Ако dayname е просто число (12), конструираме датата
+		if (is_numeric($dayname) || (strlen($dayname) <= 2 && ctype_digit($dayname))) {
+			$dateString = sprintf('%04d-%02d-%02d', $year, $month, (int)$dayname);
+		} else {
+			// Ако вече е пълна дата (YYYY-MM-DD)
+			$dateString = $dayname;
+		}
+		
+		try {
+			$date = new \DateTime($dateString);
+			$dayOfWeek = (int)$date->format('w'); // 0 (Sunday) to 6 (Saturday)
+			
+			$days = [
+				0 => 'Sunday',
+				1 => 'Monday',
+				2 => 'Tuesday',
+				3 => 'Wednesday',
+				4 => 'Thursday',
+				5 => 'Friday',
+				6 => 'Saturday'
+			];
+			
+			return $days[$dayOfWeek];
+		} catch (\Exception $e) {
+			return '';
+		}
+	}
 }
