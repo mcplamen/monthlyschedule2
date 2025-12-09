@@ -1,4 +1,7 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
+{namespace ms=Mcplamen\Monthlyschedule\ViewHelpers}
+
 <f:layout name="Default" />
 
 <f:section name="content">
@@ -47,10 +50,11 @@
 								<f:for each="{mydays}" as="myday">
 									<tr>  
 									    <td>
-										<f:comment>
+										
 										<f:format.date format="l">{myday.mymonth.year}-{myday.mymonth.month}-{myday.dayname}</f:format.date>
-										</f:comment>
-{myday.weekdayDe}											
+
+
+											
 										</td>
 										<td><f:link.action action="show" arguments="{myday : myday}">{myday.dayname}</f:link.action></td>
 										<td>{myday.timeslot}</td>

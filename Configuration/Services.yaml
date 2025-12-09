@@ -10,3 +10,6 @@ services:
   Mcplamen\Monthlyschedule\Controller\:
     resource: '../Classes/Controller'
     tags: ['backend.controller']
+    
+  Mcplamen\Monthlyschedule\ViewHelpers\WeekdayDeViewHelper:
+    tags: ['fluid.viewhelper']
