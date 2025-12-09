@@ -65,45 +65,25 @@ class MydayController extends ActionController
      * @param int $mymonth
      * @return void
      */
-    public function newAction($mymonth = 0)
-    {
-        $mymonthObject = null;
-        $mydays = [];
-        
-        // Debug
-        echo '<div style="background: orange; padding: 20px; margin: 20px;">';
-        echo 'Mymonth parameter: ' . $mymonth . '<br>';
-        echo 'Repository injected: ' . ($this->mymonthRepository ? 'YES' : 'NO') . '<br>';
-        echo '</div>';
-        
-        if ($mymonth > 0 && $this->mymonthRepository !== null) {
-            $mymonthObject = $this->mymonthRepository->findByUid($mymonth);
-            
-            if ($mymonthObject !== null && $this->mydayRepository !== null) {
-                // Вземаме всички дни
-                $allDays = $this->mydayRepository->findAll();
-                
-                // Филтрираме по mymonth
-                foreach ($allDays as $day) {
-                    $dayMymonth = $day->getMymonth();
-                    if ($dayMymonth && $dayMymonth->getUid() == $mymonth) {
-                        $mydays[] = $day;
-                    }
-                }
-                
-                // Сортираме по dayname
-                usort($mydays, function($a, $b) {
-                    return strcmp($a->getDayname(), $b->getDayname());
-                });
-            }
-        }
-        
-        $this->view->assignMultiple([
-            'mymonth' => $mymonth,
-            'mymonthObject' => $mymonthObject,
-            'mydays' => $mydays
-        ]);
-    }
+	public function newAction(int $mymonth = 0)
+	{
+		$mymonthObject = null;
+		$mydays = [];
+
+		if ($mymonth > 0) {
+			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
+
+			if ($mymonthObject) {
+				$mydays = $this->mydayRepository->findByMymonthSorted($mymonthObject);
+			}
+		}
+
+		$this->view->assignMultiple([
+			'mymonth' => $mymonth,
+			'mymonthObject' => $mymonthObject,
+			'mydays' => $mydays
+		]);
+	}
 
     /**
      * action create
@@ -156,47 +136,4 @@ class MydayController extends ActionController
         $this->redirect('list');
     }
 	
-	/**
-	 * Get day of week in English
-	 *
-	 * @param string $dayname (format: YYYY-MM-DD or just day number)
-	 * @param \Mcplamen\Monthlyschedule\Domain\Model\MyMonth $mymonthObject
-	 * @return string
-	 */
-	private function getDayOfWeek($dayname, $mymonthObject)
-	{
-		if ($mymonthObject === null) {
-			return '';
-		}
-		
-		$year = $mymonthObject->getYear();
-		$month = $mymonthObject->getMonth();
-		
-		// Ако dayname е просто число (12), конструираме датата
-		if (is_numeric($dayname) || (strlen($dayname) <= 2 && ctype_digit($dayname))) {
-			$dateString = sprintf('%04d-%02d-%02d', $year, $month, (int)$dayname);
-		} else {
-			// Ако вече е пълна дата (YYYY-MM-DD)
-			$dateString = $dayname;
-		}
-		
-		try {
-			$date = new \DateTime($dateString);
-			$dayOfWeek = (int)$date->format('w'); // 0 (Sunday) to 6 (Saturday)
-			
-			$days = [
-				0 => 'Sunday',
-				1 => 'Monday',
-				2 => 'Tuesday',
-				3 => 'Wednesday',
-				4 => 'Thursday',
-				5 => 'Friday',
-				6 => 'Saturday'
-			];
-			
-			return $days[$dayOfWeek];
-		} catch (\Exception $e) {
-			return '';
-		}
-	}
 }

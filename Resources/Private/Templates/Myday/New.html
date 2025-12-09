@@ -29,6 +29,14 @@
 		<!-- Съществуващи дни за месеца (вдясно) -->
 		<div class="col-lg-6 col-md-12 col-12">
 			<h3>Съществуващи дни за месеца</h3>
+						    <!-- DEBUG -->
+    <div style="background: yellow; padding: 10px; margin: 10px;">
+        <strong>DEBUG mydays:</strong><br>
+        Count: {mydays -> f:count()}<br>
+        <f:debug>{mydays}</f:debug>
+    </div>
+	<!-- debug start (премахни след като видиш резултатите) -->
+
 			
 			<f:if condition="{mydays -> f:count()} > 0">
 				<f:then>
