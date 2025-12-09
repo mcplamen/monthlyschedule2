@@ -26,7 +26,7 @@ class MydayRepository extends Repository
 	{
 		$query = $this->createQuery();
 		$query->matching(
-			$query->equals('mymonth', $mymonth)
+			$query->equals('mymonth', $month)
 		);
 		return $query->execute();
 	}
@@ -38,7 +38,7 @@ class MydayRepository extends Repository
 		$query = $this->createQuery();
 
 		$query->matching(
-			$query->equals('mymonth', $month->getUid())
+			$query->equals('mymonth', $month)
 		);
 
 		$query->setOrderings([

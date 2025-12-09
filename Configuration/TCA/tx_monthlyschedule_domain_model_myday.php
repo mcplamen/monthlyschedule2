@@ -182,12 +182,13 @@ return [
 			'exclude' => true,
 			'label' => 'LLL:EXT:monthlyschedule/Resources/Private/Language/locallang_db.xlf:tx_monthlyschedule_domain_model_myday.mymonth',
 			'config' => [
-				'type' => 'group',
-				'internal_type' => 'db',
-				'allowed' => 'tx_monthlyschedule_domain_model_mymonth',
-				'size' => 1,
-				'maxitems' => 1,
+				'type' => 'select',
+				'renderType' => 'selectSingle',
+				'foreign_table' => 'tx_monthlyschedule_domain_model_mymonth',
+				'foreign_field' => 'uid',  // важно!
+				'default' => 0,
 				'minitems' => 0,
+				'maxitems' => 1,
 			],
 		],
     ],
