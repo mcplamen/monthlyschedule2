@@ -235,9 +235,7 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
     }
 	
 	/**
-	 * Returns the mymonth
-	 *
-	 * @return \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
+	 * @return \Mcplamen\Monthlyschedule\Domain\Model\MyMonth
 	 */
 	public function getMymonth()
 	{
@@ -245,18 +243,12 @@ class Myday extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity
 	}
 
 	/**
-	 * Sets the mymonth
-	 *
-	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth
-	 * @return void
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\MyMonth $mymonth
 	 */
-	public function setMymonth(\Mcplamen\Monthlyschedule\Domain\Model\Mymonth $mymonth = null)
+	public function setMymonth(\Mcplamen\Monthlyschedule\Domain\Model\MyMonth $mymonth)
 	{
 		$this->mymonth = $mymonth;
 	}
-	
-
-
-	
+		
 	
 }

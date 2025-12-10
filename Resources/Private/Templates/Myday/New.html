@@ -28,15 +28,7 @@
 		
 		<!-- Съществуващи дни за месеца (вдясно) -->
 		<div class="col-lg-6 col-md-12 col-12">
-			<h3>Съществуващи дни за месеца</h3>
-						    <!-- DEBUG -->
-    <div style="background: yellow; padding: 10px; margin: 10px;">
-        <strong>DEBUG mydays:</strong><br>
-        Count: {mydays -> f:count()}<br>
-        <f:debug>{mydays}</f:debug>
-    </div>
-	<!-- debug start (премахни след като видиш резултатите) -->
-
+			<h3>Existing days for this month ({mydays -> f:count()})</h3>
 			
 			<f:if condition="{mydays -> f:count()} > 0">
 				<f:then>
@@ -44,36 +36,32 @@
 						<table class="tx_monthlyschedule table table-striped">
 							<thead>
 								<tr>
-								    <th>Weekday</th>
-									<th><f:translate key="tx_monthlyschedule_domain_model_myday.dayname" /></th>
-									<th><f:translate key="tx_monthlyschedule_domain_model_myday.timeslot" /></th>
-									<th><f:translate key="tx_monthlyschedule_domain_model_myday.confirm" /></th>
-									<th><f:translate key="tx_monthlyschedule_domain_model_myday.person" /></th>
-									<th><f:translate key="tx_monthlyschedule_domain_model_myday.email" /></th>
-									<th><f:translate key="tx_monthlyschedule_domain_model_myday.topic" /></th>
+									<th>Day</th>
+									<th>Timeslot</th>
+									<th>Person</th>
+									<th>Email</th>
+									<th>Topic</th>
+									<th>Confirm</th>
 									<th>Actions</th>
 								</tr>
 							</thead>
 							<tbody>
 								<f:for each="{mydays}" as="myday">
-									<tr>  
-									    <td>
-										
-										<f:format.date format="l">{myday.mymonth.year}-{myday.mymonth.month}-{myday.dayname}</f:format.date>
-
-
-											
+									<tr>
+										<td>
+											<f:link.action action="show" arguments="{myday : myday}">
+												<strong>{myday.dayname}</strong>
+											</f:link.action>
 										</td>
-										<td><f:link.action action="show" arguments="{myday : myday}">{myday.dayname}</f:link.action></td>
-										<td>{myday.timeslot}</td>
+										<td>{myday.timeslot} - {myday.timeslotend}</td>
+										<td>{myday.person}</td>
+										<td>{myday.email}</td>
+										<td>{myday.topic}</td>
 										<td>
 											<f:if condition="{myday.confirm}">
 												<span class="badge badge-success">✓</span>
 											</f:if>
 										</td>
-										<td>{myday.person}</td>
-										<td>{myday.email}</td>
-										<td>{myday.topic}</td>
 										<td>
 											<f:link.action action="edit" arguments="{myday : myday}" class="btn btn-sm btn-warning">Edit</f:link.action>
 											<f:link.action action="delete" arguments="{myday : myday}" class="btn btn-sm btn-danger">Delete</f:link.action>
@@ -85,7 +73,9 @@
 					</div>
 				</f:then>
 				<f:else>
-					<p class="alert alert-info">Все още няма създадени дни за този месец.</p>
+					<div class="alert alert-info">
+						No days created for this month yet.
+					</div>
 				</f:else>
 			</f:if>
 			
