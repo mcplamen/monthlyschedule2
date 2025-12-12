@@ -36,6 +36,7 @@
 						<table class="tx_monthlyschedule table table-striped">
 							<thead>
 								<tr>
+									<th>WeekDay</th>
 									<th>Day</th>
 									<th>Timeslot</th>
 									<th>Person</th>
@@ -48,6 +49,12 @@
 							<tbody>
 								<f:for each="{mydays}" as="myday">
 									<tr>
+										<td>
+														<ms:germanDay 
+										day="{myday.dayname}" 
+										month="{mymonthObject.month}" 
+										year="{mymonthObject.year}" />
+										</td>
 										<td>
 											<f:link.action action="show" arguments="{myday : myday}">
 												<strong>{myday.dayname}</strong>

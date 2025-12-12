@@ -55,50 +55,33 @@ class MydayController extends ActionController
         $this->view->assign('myday', $myday);
     }
 
-    /**
-     * action new
-     *
-     * @param int $mymonth UID на Mymonth записа
-     * @return void
-     */
-    public function newAction($mymonth = 0)
-    {
-        $mymonthObject = null;
-        $mydays = [];
-        
-        if ($mymonth > 0) {
-            // Зареждаме mymonth обекта
-            $mymonthObject = $this->mymonthRepository->findByUid($mymonth);
-            
-            if ($mymonthObject !== null) {
-                // Вземаме всички Myday записи
-                $allDays = $this->mydayRepository->findAll();
-                
-                // Филтрираме само тези които принадлежат на този mymonth
-                foreach ($allDays as $day) {
-                    $dayMymonth = $day->getMymonth();
-                    
-                    // Проверяваме дали този ден има mymonth и дали е същият
-                    if ($dayMymonth !== null && $dayMymonth->getUid() == $mymonth) {
-                        $mydays[] = $day;
-                    }
-                }
-                
-                // Сортираме дните по dayname във възходящ ред
-                if (!empty($mydays)) {
-                    usort($mydays, function($a, $b) {
-                        return strcmp($a->getDayname(), $b->getDayname());
-                    });
-                }
-            }
-        }
-        
-        $this->view->assignMultiple([
-            'mymonth' => $mymonth,
-            'mymonthObject' => $mymonthObject,
-            'mydays' => $mydays
-        ]);
-    }
+	/**
+	 * action new
+	 *
+	 * @param int $mymonth UID на Mymonth записа
+	 * @return void
+	 */
+	public function newAction($mymonth = 0)
+	{
+		$mymonthObject = null;
+		$mydays = [];
+		
+		if ($mymonth > 0) {
+			// Зареждаме mymonth обекта
+			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
+			
+			if ($mymonthObject !== null) {
+				// Използваме новия repository метод
+				$mydays = $this->mydayRepository->findByMymonth($mymonth);
+			}
+		}
+		
+		$this->view->assignMultiple([
+			'mymonth' => $mymonth,
+			'mymonthObject' => $mymonthObject,
+			'mydays' => $mydays
+		]);
+	}
 
     /**
      * action create
