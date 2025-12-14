@@ -1,6 +1,9 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
-<f:layout name="Default" />
 
+{namespace ms=Mcplamen\Monthlyschedule\ViewHelpers}
+
+<f:layout name="Default" />
+<f:asset.css identifier="calendar-css" href="EXT:monthlyschedule/Resources/Public/Css/calendar.css" />
 This template is responsible for creating a table of domain objects.
 
 If you modify this template, do not forget to change the overwrite settings
@@ -14,6 +17,112 @@ in /Configuration/ExtensionBuilder/settings.yaml:
 Otherwise your changes will be overwritten the next time you save the extension in the extension builder
 
 <f:section name="content">
+
+    <h1>Monthly Schedule</h1>
+    
+    <!-- Текущ месец -->
+    <h2>{currentYear} - <f:translate key="month.{currentMonth}" /></h2>
+    
+    <ms:calendar month="{currentMonth}" year="{currentYear}" days="{currentDays}">
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th>Mo</th>
+                    <th>Di</th>
+                    <th>Mi</th>
+                    <th>Do</th>
+                    <th>Fr</th>
+                    <th>Sa</th>
+                    <th>So</th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{calendar}" as="week">
+                    <tr>
+                        <f:for each="{week}" as="cell">
+                            <td class="{f:if(condition: cell.hasData, then: 'has-data', else: 'empty')}">
+                                <f:if condition="{cell.day}">
+                                    <f:then>
+                                        <f:if condition="{cell.hasData}">
+                                            <f:then>
+                                                <f:link.action 
+                                                    action="show" 
+                                                    controller="Myday" 
+                                                    arguments="{myday: cell.dayObject}">
+                                                    {cell.day}
+                                                </f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <span class="no-data">{cell.day}</span>
+                                            </f:else>
+                                        </f:if>
+                                    </f:then>
+                                    <f:else>
+                                        <span class="empty-cell">&nbsp;</span>
+                                    </f:else>
+                                </f:if>
+                            </td>
+                        </f:for>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </ms:calendar>
+    
+    <br><br>
+    
+    <!-- Следващ месец -->
+    <h2>{nextYear} - <f:translate key="month.{nextMonth}" /></h2>
+    
+    <ms:calendar month="{nextMonth}" year="{nextYear}" days="{nextDays}">
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th>Mo</th>
+                    <th>Di</th>
+                    <th>Mi</th>
+                    <th>Do</th>
+                    <th>Fr</th>
+                    <th>Sa</th>
+                    <th>So</th>
+                </tr>
+            </thead>
+            <tbody>
+                <f:for each="{calendar}" as="week">
+                    <tr>
+                        <f:for each="{week}" as="cell">
+                            <td class="{f:if(condition: cell.hasData, then: 'has-data', else: 'empty')}">
+                                <f:if condition="{cell.day}">
+                                    <f:then>
+                                        <f:if condition="{cell.hasData}">
+                                            <f:then>
+                                                <f:link.action 
+                                                    action="show" 
+                                                    controller="Myday" 
+                                                    arguments="{myday: cell.dayObject}">
+                                                    {cell.day}
+                                                </f:link.action>
+                                            </f:then>
+                                            <f:else>
+                                                <span class="no-data">{cell.day}</span>
+                                            </f:else>
+                                        </f:if>
+                                    </f:then>
+                                    <f:else>
+                                        <span class="empty-cell">&nbsp;</span>
+                                    </f:else>
+                                </f:if>
+                            </td>
+                        </f:for>
+                    </tr>
+                </f:for>
+            </tbody>
+        </table>
+    </ms:calendar>
+	
+	<hr>
+
+
     <h1>Admin panel page</h1>
 
     <f:flashMessages />

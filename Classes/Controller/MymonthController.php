@@ -26,17 +26,52 @@ class MymonthController extends ActionController
         $this->mymonthRepository = $mymonthRepository;
     }
 
-    /**
-     * action index
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    public function indexAction(): \Psr\Http\Message\ResponseInterface
-    {
-        $mymonths = $this->mymonthRepository->findAll();
-        $this->view->assign('mymonths', $mymonths);
-		return $this->htmlResponse();
-    }
+	/**
+	 * action index
+	 *
+	 * @return void
+	 */
+	public function indexAction()
+	{
+		// Вземаме текущия месец и година
+		$currentMonth = (int)date('n');
+		$currentYear = (int)date('Y');
+		
+		// Следващ месец
+		$nextMonth = $currentMonth + 1;
+		$nextYear = $currentYear;
+		if ($nextMonth > 12) {
+			$nextMonth = 1;
+			$nextYear++;
+		}
+		
+		// Намираме Mymonth записите
+		$currentMymonth = $this->mymonthRepository->findByMonthAndYear($currentMonth, $currentYear)->getFirst();
+		$nextMymonth = $this->mymonthRepository->findByMonthAndYear($nextMonth, $nextYear)->getFirst();
+		
+		// Вземаме дните за всеки месец
+		$currentDays = [];
+		$nextDays = [];
+		
+		if ($currentMymonth) {
+			$currentDays = $this->mydayRepository->findByMymonth($currentMymonth->getUid());
+		}
+		
+		if ($nextMymonth) {
+			$nextDays = $this->mydayRepository->findByMymonth($nextMymonth->getUid());
+		}
+		
+		$this->view->assignMultiple([
+			'currentMonth' => $currentMonth,
+			'currentYear' => $currentYear,
+			'currentMymonth' => $currentMymonth,
+			'currentDays' => $currentDays,
+			'nextMonth' => $nextMonth,
+			'nextYear' => $nextYear,
+			'nextMymonth' => $nextMymonth,
+			'nextDays' => $nextDays
+		]);
+	}
 
     /**
      * action list
