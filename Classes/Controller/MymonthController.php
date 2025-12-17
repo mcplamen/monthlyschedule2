@@ -33,45 +33,57 @@ class MymonthController extends ActionController
 	 */
 	public function indexAction()
 	{
-		// Вземаме текущия месец и година
-		$currentMonth = (int)date('n');
-		$currentYear = (int)date('Y');
+		$currentMonth = (int)date('n');  // 12
+		$currentYear = (int)date('Y');   // 2025
 		
-		// Следващ месец
-		$nextMonth = $currentMonth + 1;
-		$nextYear = $currentYear;
+		$nextMonth = $currentMonth + 1;  // 1
+		$nextYear = $currentYear;        // 2025
 		if ($nextMonth > 12) {
 			$nextMonth = 1;
-			$nextYear++;
+			$nextYear++;  // 2026
 		}
 		
-		// Намираме Mymonth записите за текущия месец
+		// DEBUG - Виж всички месеци в базата
+		$allMonths = $this->mymonthRepository->findAll();
+		echo "<h3>Всички месеци в базата:</h3><ul>";
+		foreach ($allMonths as $m) {
+			echo "<li>Month: {$m->getMonth()}, Year: {$m->getYear()}, UID: {$m->getUid()}</li>";
+		}
+		echo "</ul>";
+		
+		// DEBUG - Търсим конкретните месеци
+		echo "<p>Търся: Month={$currentMonth}, Year={$currentYear}</p>";
+		echo "<p>Търся: Month={$nextMonth}, Year={$nextYear}</p>";
+		
 		$currentMymonthResult = $this->mymonthRepository->findByMonthAndYear($currentMonth, $currentYear);
+		echo "<p>Намерени за текущ месец: " . $currentMymonthResult->count() . "</p>";
+		
 		$currentMymonth = null;
 		if ($currentMymonthResult->count() > 0) {
 			$currentMymonth = $currentMymonthResult->getFirst();
+			echo "<p>Текущ месец UID: " . $currentMymonth->getUid() . "</p>";
 		}
 		
-		// Намираме Mymonth записите за следващия месец
 		$nextMymonthResult = $this->mymonthRepository->findByMonthAndYear($nextMonth, $nextYear);
+		echo "<p>Намерени за следващ месец: " . $nextMymonthResult->count() . "</p>";
+		
 		$nextMymonth = null;
 		if ($nextMymonthResult->count() > 0) {
 			$nextMymonth = $nextMymonthResult->getFirst();
 		}
 		
-		// Вземаме дните за текущия месец
 		$currentDays = [];
 		if ($currentMymonth) {
 			$currentDays = $this->mydayRepository->findByMymonth($currentMymonth->getUid());
+			echo "<p>Дни за текущ месец: " . $currentDays->count() . "</p>";
 		}
 		
-		// Вземаме дните за следващия месец
 		$nextDays = [];
 		if ($nextMymonth) {
 			$nextDays = $this->mydayRepository->findByMymonth($nextMymonth->getUid());
 		}
 		
-		// ДОБАВИ ТОВА - за admin panel секцията
+		// Добави mymonths за admin panel
 		$mymonths = $this->mymonthRepository->findAll();
 		
 		$this->view->assignMultiple([
@@ -83,7 +95,7 @@ class MymonthController extends ActionController
 			'nextYear' => $nextYear,
 			'nextMymonth' => $nextMymonth,
 			'nextDays' => $nextDays,
-			'mymonths' => $mymonths  // ДОБАВИ ТОВА
+			'mymonths' => $mymonths
 		]);
 	}
 
