@@ -42,7 +42,12 @@ Otherwise your changes will be overwritten the next time you save the extension 
                         <f:for each="{calendar}" as="week">
                             <tr>
                                 <f:for each="{week}" as="cell">
-                                    <td class="{f:if(condition: cell.hasData, then: 'has-data', else: 'empty')}">
+                                    <td class="
+                                        {f:if(condition: cell.hasData, then: 'has-data')}
+                                        {f:if(condition: cell.isToday, then: ' today')}
+                                        {f:if(condition: cell.isWeekend, then: ' weekend')}
+                                        {f:if(condition: '{cell.day} == 0', then: ' empty')}
+                                    ">
                                         <f:if condition="{cell.day}">
                                             <f:then>
                                                 <f:if condition="{cell.hasData}">
@@ -100,7 +105,12 @@ Otherwise your changes will be overwritten the next time you save the extension 
                         <f:for each="{calendar}" as="week">
                             <tr>
                                 <f:for each="{week}" as="cell">
-                                    <td class="{f:if(condition: cell.hasData, then: 'has-data', else: 'empty')}">
+                                    <td class="
+                                        {f:if(condition: cell.hasData, then: 'has-data')}
+                                        {f:if(condition: cell.isToday, then: ' today')}
+                                        {f:if(condition: cell.isWeekend, then: ' weekend')}
+                                        {f:if(condition: '{cell.day} == 0', then: ' empty')}
+                                    ">
                                         <f:if condition="{cell.day}">
                                             <f:then>
                                                 <f:if condition="{cell.hasData}">

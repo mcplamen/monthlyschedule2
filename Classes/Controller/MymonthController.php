@@ -6,7 +6,9 @@ namespace Mcplamen\Monthlyschedule\Controller;
 
 use Mcplamen\Monthlyschedule\Domain\Model\Mymonth;
 use Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
+use Mcplamen\Monthlyschedule\Domain\Repository\MydayRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+
 
 class MymonthController extends ActionController
 {
@@ -17,6 +19,11 @@ class MymonthController extends ActionController
      * @var \Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository
      */
     protected $mymonthRepository = null;
+	
+	 /**
+     * @var MydayRepository
+     */
+    protected $mydayRepository; 
 
     /**
      * @param \Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository $mymonthRepository
@@ -24,6 +31,14 @@ class MymonthController extends ActionController
     public function injectMymonthRepository(\Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository $mymonthRepository)
     {
         $this->mymonthRepository = $mymonthRepository;
+    }
+	
+	/**
+     * @param MydayRepository $mydayRepository
+     */
+    public function injectMydayRepository(MydayRepository $mydayRepository)  // ДОБАВИ ТОЗИ МЕТОД
+    {
+        $this->mydayRepository = $mydayRepository;
     }
 
 	/**
