@@ -7,17 +7,21 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 
 /**
  * Calendar ViewHelper
- * Generates calendar grid structure with days
+ * Generates calendar grid structure with days and renders children with calendar data
  * 
  * Usage:
  * {namespace ms=Mcplamen\Monthlyschedule\ViewHelpers}
- * <ms:calendar month="{month}" year="{year}" days="{days}" />
+ * <ms:calendar month="{month}" year="{year}" days="{days}">
+ *     <h2>{monthName} {year}</h2>
+ *     <!-- calendar data available here -->
+ * </ms:calendar>
  */
 class CalendarViewHelper extends AbstractViewHelper
 {
     use CompileWithRenderStatic;
     
     protected $escapeOutput = false;
+    protected $escapeChildren = false;
 
     public function initializeArguments()
     {
@@ -30,7 +34,7 @@ class CalendarViewHelper extends AbstractViewHelper
      * @param array $arguments
      * @param \Closure $renderChildrenClosure
      * @param RenderingContextInterface $renderingContext
-     * @return array
+     * @return string
      */
     public static function renderStatic(
         array $arguments,
@@ -142,7 +146,7 @@ class CalendarViewHelper extends AbstractViewHelper
             $calendar[] = $week;
         }
         
-        return [
+        $calendarData = [
             'calendar' => $calendar,
             'month' => $month,
             'year' => $year,
@@ -150,5 +154,36 @@ class CalendarViewHelper extends AbstractViewHelper
             'daysInMonth' => $daysInMonth,
             'daysWithData' => count($daysArray)
         ];
+        
+        // Assign calendar data to template variable provider
+        $templateVariableContainer = $renderingContext->getVariableProvider();
+        
+        // Save current values if they exist
+        $backup = [];
+        foreach ($calendarData as $key => $value) {
+            if ($templateVariableContainer->exists($key)) {
+                $backup[$key] = $templateVariableContainer->get($key);
+            }
+        }
+        
+        // Add calendar data
+        foreach ($calendarData as $key => $value) {
+            $templateVariableContainer->add($key, $value);
+        }
+        
+        // Render children
+        $output = $renderChildrenClosure();
+        
+        // Remove calendar data
+        foreach ($calendarData as $key => $value) {
+            $templateVariableContainer->remove($key);
+        }
+        
+        // Restore backed up values
+        foreach ($backup as $key => $value) {
+            $templateVariableContainer->add($key, $value);
+        }
+        
+        return $output;
     }
 }

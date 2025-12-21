@@ -54,6 +54,63 @@ Otherwise your changes will be overwritten the next time you save the extension 
     </table>
 
     <f:link.action action="new">New Mymonth</f:link.action>
+	
+	   <h1>Admin panel page</h1>
+
+    <f:flashMessages />
+	<div class="row">
+	<div class="col-lg-6 col-md-12 col-12">
+	    <table class="tx_monthlyschedule">
+        <tr>
+            <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.month" /></th>
+            <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.year" /></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <f:for each="{mymonths}" as="mymonth">
+            <tr>
+                <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.month}</f:link.action></td>
+                <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.year}</f:link.action></td>
+                <td><f:link.action action="edit" arguments="{mymonth : mymonth}">Edit</f:link.action></td>
+                <td><f:link.action action="delete" arguments="{mymonth : mymonth}">Delete</f:link.action></td>
+            </tr>
+        </f:for>
+    </table>
+	<f:link.action action="new">New Mymonth</f:link.action>
+	</div>
+	<div class="col-lg-6 col-md-12 col-12">
+		    <table class="tx_monthlyschedule">
+					<tr>
+						<th><f:translate key="tx_monthlyschedule_domain_model_mymonth.month" /></th>
+						<th><f:translate key="tx_monthlyschedule_domain_model_mymonth.year" /></th>
+						<th></th>
+						<th></th>
+					</tr>
+					<f:for each="{mymonths}" as="mymonth">
+						<tr>
+							<td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.month}</f:link.action></td>
+							<td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.year}</f:link.action></td>
+							<td><f:link.action action="edit" arguments="{mymonth : mymonth}">Edit</f:link.action></td>
+							<td><f:link.action action="delete" arguments="{mymonth : mymonth}">Delete</f:link.action></td>
+							<td><f:link.action 
+				action="new" 
+				controller="Myday" 
+				extensionName="Monthlyschedule" 
+				pluginName="Monthlyschedule"
+				arguments="{mymonth: mymonth.uid}">
+				New days for the month
+			</f:link.action>
+
+			</td>
+							
+
+						</tr>
+					</f:for>
+			</table>
+	</div>
+	</div>
+	
+	
 </f:section>
 </html>
 
