@@ -4,6 +4,8 @@ namespace Mcplamen\Monthlyschedule\Controller;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use Mcplamen\Monthlyschedule\Domain\Repository\MydayRepository;
 use Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
+use TYPO3\CMS\Core\Utility\DebugUtility;
+use Psr\Http\Message\ResponseInterface;
 
 class MydayController extends ActionController
 {
@@ -32,6 +34,7 @@ class MydayController extends ActionController
     {
         $this->mymonthRepository = $mymonthRepository;
     }
+	
 
     /**
      * action list
@@ -64,48 +67,50 @@ class MydayController extends ActionController
  * @return void
  * @return void
  */
-public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
-{
-// This should show immediately
-    var_dump('=== NEW ACTION CALLED ===');
-    var_dump('mymonth', $mymonth);
-    var_dump('monthNumber', $monthNumber);
-    var_dump('year', $year);
-    die(); 
-    }
+public function newAction(
+    int $mymonth = 0,
+    int $monthNumber = 0,
+    int $year = 0
+): ResponseInterface {
+throw new \RuntimeException('NEW ACTION HIT');
+    // ✅ DEBUG – ЩЕ СЕ ВИДИ НА СТРАНИЦАТА
+    DebugUtility::debug(
+        [
+            'mymonth' => $mymonth,
+            'monthNumber' => $monthNumber,
+            'year' => $year,
+        ],
+        'newAction arguments'
+    );
+
     $mymonthObject = null;
     $mydays = [];
-    
-    // Debug
-    echo "<h3>DEBUG in controller:</h3>";
-    echo "mymonth = " . $mymonth . "<br>";
-    echo "monthNumber = " . $monthNumber . "<br>";
-    echo "year = " . $year . "<br>";
-    
+
     if ($mymonth > 0) {
-        // Зареждаме mymonth обекта
         $mymonthObject = $this->mymonthRepository->findByUid($mymonth);
-        
-        echo "mymonthObject found: " . ($mymonthObject ? 'YES' : 'NO') . "<br>";
-        
+
+        DebugUtility::debug(
+            $mymonthObject,
+            'Loaded mymonth object'
+        );
+
         if ($mymonthObject !== null) {
-            // Използваме repository метода
             $mydays = $this->mydayRepository->findByMymonth($mymonth);
-            
-            echo "Days found: " . $mydays->count() . "<br>";
-            
-            // Ако не са подадени month и year, вземи от обекта
-            if ($monthNumber == 0) {
+
+            DebugUtility::debug(
+                $mydays->count(),
+                'Days found'
+            );
+
+            if ($monthNumber === 0) {
                 $monthNumber = $mymonthObject->getMonth();
-                echo "Got monthNumber from object: " . $monthNumber . "<br>";
             }
-            if ($year == 0) {
+            if ($year === 0) {
                 $year = $mymonthObject->getYear();
-                echo "Got year from object: " . $year . "<br>";
             }
         }
     }
-    
+
     $this->view->assignMultiple([
         'mymonth' => $mymonth,
         'mymonthObject' => $mymonthObject,
@@ -113,8 +118,10 @@ public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
         'monthNumber' => $monthNumber,
         'year' => $year
     ]);
-}
 
+    // ✅ КРИТИЧНО
+    return $this->htmlResponse();
+}
     /**
      * action create
      *

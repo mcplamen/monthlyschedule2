@@ -14,6 +14,7 @@ class MydayRepository extends Repository
      */
     public function findByMymonth($mymonthUid)
     {
+		
         $query = $this->createQuery();
         $query->matching(
             $query->equals('mymonth', $mymonthUid)
