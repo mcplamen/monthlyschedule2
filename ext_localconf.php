@@ -6,13 +6,13 @@ defined('TYPO3') || die();
         'Monthlyschedule',
         'Monthlyschedule',
         [
-            \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'index, list, show, create, new, edit, update, delete',
-            \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, list, show, create, new, edit, update, delete, select'
+            \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'index, list, show',
+            \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, list, show'
         ],
         // non-cacheable actions
         [
-            \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'index, list, show, create, new, edit, update, delete',
-            \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, list, show, create, new, edit, update, delete, select'
+            \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'new, create, edit, update, delete',
+            \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'new, create, edit, update, delete, select'
         ]
     );
 
