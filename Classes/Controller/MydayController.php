@@ -58,34 +58,50 @@ class MydayController extends ActionController
 /**
  * action new
  *
- * @param int $mymonth UID на Mymonth записа
- * @param int $monthNumber Номер на месеца (1-12)
- * @param int $year Година
+ * @param int $mymonth
+ * @param int $monthNumber
+ * @param int $year
+ * @return void
  * @return void
  */
 public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
 {
-	echo "<h3>DEBUG newAction:</h3>";
+// This should show immediately
+    var_dump('=== NEW ACTION CALLED ===');
+    var_dump('mymonth', $mymonth);
+    var_dump('monthNumber', $monthNumber);
+    var_dump('year', $year);
+    die(); 
+    }
+    $mymonthObject = null;
+    $mydays = [];
+    
+    // Debug
+    echo "<h3>DEBUG in controller:</h3>";
     echo "mymonth = " . $mymonth . "<br>";
     echo "monthNumber = " . $monthNumber . "<br>";
     echo "year = " . $year . "<br>";
-    $mymonthObject = null;
-    $mydays = [];
     
     if ($mymonth > 0) {
         // Зареждаме mymonth обекта
         $mymonthObject = $this->mymonthRepository->findByUid($mymonth);
         
+        echo "mymonthObject found: " . ($mymonthObject ? 'YES' : 'NO') . "<br>";
+        
         if ($mymonthObject !== null) {
             // Използваме repository метода
             $mydays = $this->mydayRepository->findByMymonth($mymonth);
             
+            echo "Days found: " . $mydays->count() . "<br>";
+            
             // Ако не са подадени month и year, вземи от обекта
             if ($monthNumber == 0) {
                 $monthNumber = $mymonthObject->getMonth();
+                echo "Got monthNumber from object: " . $monthNumber . "<br>";
             }
             if ($year == 0) {
                 $year = $mymonthObject->getYear();
+                echo "Got year from object: " . $year . "<br>";
             }
         }
     }
