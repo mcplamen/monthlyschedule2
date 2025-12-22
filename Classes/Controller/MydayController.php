@@ -65,6 +65,10 @@ class MydayController extends ActionController
  */
 public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
 {
+	echo "<h3>DEBUG newAction:</h3>";
+    echo "mymonth = " . $mymonth . "<br>";
+    echo "monthNumber = " . $monthNumber . "<br>";
+    echo "year = " . $year . "<br>";
     $mymonthObject = null;
     $mydays = [];
     
