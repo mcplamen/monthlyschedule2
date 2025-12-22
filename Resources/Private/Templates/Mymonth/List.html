@@ -100,6 +100,15 @@ Otherwise your changes will be overwritten the next time you save the extension 
 				arguments="{mymonth: mymonth.uid}">
 				New days for the month
 			</f:link.action>
+			
+<f:link.action 
+    action="new" 
+    controller="Myday" 
+    extensionName="Monthlyschedule" 
+    pluginName="Monthlyschedule"
+    arguments="{mymonth: mymonth.uid, monthNumber: mymonth.month, year: mymonth.year}">
+    SUPER New days for the month
+</f:link.action>
 
 			</td>
 							
