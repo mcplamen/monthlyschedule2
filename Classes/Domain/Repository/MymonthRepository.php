@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mcplamen\Monthlyschedule\Domain\Repository;
 
+use Mcplamen\Monthlyschedule\Domain\Model\Mymonth;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 
