@@ -8,13 +8,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 /**
  * Calendar ViewHelper
  * Generates calendar grid structure with days and renders children with calendar data
- * 
- * Usage:
- * {namespace ms=Mcplamen\Monthlyschedule\ViewHelpers}
- * <ms:calendar month="{month}" year="{year}" days="{days}">
- *     <h2>{monthName} {year}</h2>
- *     <!-- calendar data available here -->
- * </ms:calendar>
+ * Supports multiple events per day
  */
 class CalendarViewHelper extends AbstractViewHelper
 {
@@ -30,12 +24,6 @@ class CalendarViewHelper extends AbstractViewHelper
         $this->registerArgument('days', 'mixed', 'Array or QueryResult of day objects', false, []);
     }
 
-    /**
-     * @param array $arguments
-     * @param \Closure $renderChildrenClosure
-     * @param RenderingContextInterface $renderingContext
-     * @return string
-     */
     public static function renderStatic(
         array $arguments,
         \Closure $renderChildrenClosure,
@@ -50,39 +38,46 @@ class CalendarViewHelper extends AbstractViewHelper
             $days = $days->toArray();
         }
         
-        // Създаваме масив с дните индексирани по dayname
+        // Създаваме масив с дните - ВАЖНО: вече groupваме по dayname
         $daysArray = [];
         if (is_array($days)) {
             foreach ($days as $day) {
                 if (is_object($day) && method_exists($day, 'getDayname')) {
                     $dayname = (int)$day->getDayname();
-                    $daysArray[$dayname] = $day;
+                    
+                    // Ако още няма масив за този ден, създаваме го
+                    if (!isset($daysArray[$dayname])) {
+                        $daysArray[$dayname] = [];
+                    }
+                    
+                    // Добавяме събитието към масива за този ден
+                    $daysArray[$dayname][] = $day;
                 }
             }
+        }
+        
+        // Сортираме събитията във всеки ден по starttime
+        foreach ($daysArray as $dayname => $events) {
+            usort($daysArray[$dayname], function($a, $b) {
+                $timeA = $a->getTimeslot() ?? '';
+                $timeB = $b->getTimeslotend() ?? '';
+                return strcmp($timeA, $timeB);
+            });
         }
         
         // Първи ден на месеца
         $firstDay = mktime(0, 0, 0, $month, 1, $year);
         $daysInMonth = (int)date('t', $firstDay);
-        $dayOfWeek = (int)date('w', $firstDay); // 0 (Sunday) to 6 (Saturday)
+        $dayOfWeek = (int)date('w', $firstDay);
         
         // Преобразуваме от US формат (0=Sunday) в EU формат (0=Monday)
         $startDayOfWeek = ($dayOfWeek == 0) ? 6 : $dayOfWeek - 1;
         
         // Немски имена на месеците
         $germanMonths = [
-            1 => 'Januar',
-            2 => 'Februar',
-            3 => 'März',
-            4 => 'April',
-            5 => 'Mai',
-            6 => 'Juni',
-            7 => 'Juli',
-            8 => 'August',
-            9 => 'September',
-            10 => 'Oktober',
-            11 => 'November',
-            12 => 'Dezember'
+            1 => 'Januar', 2 => 'Februar', 3 => 'März', 4 => 'April',
+            5 => 'Mai', 6 => 'Juni', 7 => 'Juli', 8 => 'August',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Dezember'
         ];
         
         $calendar = [];
@@ -93,7 +88,7 @@ class CalendarViewHelper extends AbstractViewHelper
             $week[] = [
                 'day' => null,
                 'hasData' => false,
-                'dayObject' => null,
+                'dayEvents' => [],
                 'isToday' => false,
                 'isWeekend' => false
             ];
@@ -108,19 +103,19 @@ class CalendarViewHelper extends AbstractViewHelper
         // Попълваме дните
         for ($day = 1; $day <= $daysInMonth; $day++) {
             $hasData = isset($daysArray[$day]);
-            $dayObject = $hasData ? $daysArray[$day] : null;
+            $dayEvents = $hasData ? $daysArray[$day] : [];
             
             // Определяме дали е днес
             $isToday = ($isCurrentMonth && $day == $today);
             
-            // Определяме дали е уикенд (събота или неделя)
+            // Определяме дали е уикенд
             $currentDayOfWeek = ($startDayOfWeek + $day - 1) % 7;
             $isWeekend = ($currentDayOfWeek == 5 || $currentDayOfWeek == 6);
             
             $week[] = [
                 'day' => $day,
                 'hasData' => $hasData,
-                'dayObject' => $dayObject,
+                'dayEvents' => $dayEvents,  // Масив от всички събития за този ден
                 'isToday' => $isToday,
                 'isWeekend' => $isWeekend
             ];
@@ -132,13 +127,13 @@ class CalendarViewHelper extends AbstractViewHelper
             }
         }
         
-        // Добавяме празни клетки в края ако е необходимо
+        // Добавяме празни клетки в края
         if (count($week) > 0) {
             while (count($week) < 7) {
                 $week[] = [
                     'day' => null,
                     'hasData' => false,
-                    'dayObject' => null,
+                    'dayEvents' => [],
                     'isToday' => false,
                     'isWeekend' => false
                 ];
@@ -146,19 +141,22 @@ class CalendarViewHelper extends AbstractViewHelper
             $calendar[] = $week;
         }
         
+        // Броим общо колко дни имат данни
+        $daysWithData = count($daysArray);
+        
         $calendarData = [
             'calendar' => $calendar,
             'month' => $month,
             'year' => $year,
             'monthName' => $germanMonths[$month],
             'daysInMonth' => $daysInMonth,
-            'daysWithData' => count($daysArray)
+            'daysWithData' => $daysWithData
         ];
         
-        // Assign calendar data to template variable provider
+        // Assign calendar data to template
         $templateVariableContainer = $renderingContext->getVariableProvider();
         
-        // Save current values if they exist
+        // Save current values
         $backup = [];
         foreach ($calendarData as $key => $value) {
             if ($templateVariableContainer->exists($key)) {

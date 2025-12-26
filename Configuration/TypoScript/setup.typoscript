@@ -37,3 +37,4 @@ config.tx_extbase {
         }
     }
 }
+page.includeCSS.monthlyschedule = EXT:monthlyschedule/Resources/Public/Css/calendar.css

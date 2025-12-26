@@ -3,155 +3,190 @@
 {namespace ms=Mcplamen\Monthlyschedule\ViewHelpers}
 
 <f:layout name="Default" />
-<f:asset.css identifier="calendar-css" href="EXT:monthlyschedule/Resources/Public/Css/calendar.css" />
-This template is responsible for creating a table of domain objects.
-
-If you modify this template, do not forget to change the overwrite settings
-in /Configuration/ExtensionBuilder/settings.yaml:
-  Resources:
-    Private:
-      Templates:
-        Mymonth:
-          Index.html: keep
-
-Otherwise your changes will be overwritten the next time you save the extension in the extension builder
 
 <f:section name="content">
 
-    <h1>Monthly Schedule</h1>
-    
-    <!-- Текущ месец -->
-    <f:if condition="{currentMymonth}">
-        <f:then>
-            <ms:calendar month="{currentMonth}" year="{currentYear}" days="{currentDays}">
-                <h2>{monthName} {year}</h2>
-                
-                <table class="calendar-table">
-                    <thead>
-                        <tr>
-                            <th>Mo</th>
-                            <th>Di</th>
-                            <th>Mi</th>
-                            <th>Do</th>
-                            <th>Fr</th>
-                            <th>Sa</th>
-                            <th>So</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <f:for each="{calendar}" as="week">
+    <div class="calendar-wrapper">
+        <h1 class="main-title">Monthly Schedule</h1>
+        
+        <!-- Текущ месец -->
+        <f:if condition="{currentMymonth}">
+            <f:then>
+                <ms:calendar month="{currentMonth}" year="{currentYear}" days="{currentDays}">
+                    <div class="month-header">
+                        <h2>{monthName} {year}</h2>
+                        <div class="month-actions">
+                            <f:link.action 
+                                action="new" 
+                                controller="Myday" 
+                                arguments="{mymonth: currentMymonth.uid, monthNumber: currentMonth, year: currentYear}"
+                                class="btn btn-success">
+                                + Neue Tage
+                            </f:link.action>
+                        </div>
+                    </div>
+                    
+                    <table class="calendar-table">
+                        <thead>
                             <tr>
-                                <f:for each="{week}" as="cell">
-                                    <td class="
-                                        {f:if(condition: cell.hasData, then: 'has-data')}
-                                        {f:if(condition: cell.isToday, then: ' today')}
-                                        {f:if(condition: cell.isWeekend, then: ' weekend')}
-                                        {f:if(condition: '{cell.day} == 0', then: ' empty')}
-                                    ">
-                                        <f:if condition="{cell.day}">
-                                            <f:then>
-                                                <f:if condition="{cell.hasData}">
-                                                    <f:then>
-                                                        <f:link.action 
-                                                            action="show" 
-                                                            controller="Myday" 
-                                                            arguments="{myday: cell.dayObject}">
-                                                            {cell.day}
-                                                        </f:link.action>
-                                                    </f:then>
-                                                    <f:else>
-                                                        <span class="no-data">{cell.day}</span>
-                                                    </f:else>
-                                                </f:if>
-                                            </f:then>
-                                            <f:else>
-                                                <span class="empty-cell">&nbsp;</span>
-                                            </f:else>
-                                        </f:if>
-                                    </td>
-                                </f:for>
+                                <th>Mo</th>
+                                <th>Di</th>
+                                <th>Mi</th>
+                                <th>Do</th>
+                                <th>Fr</th>
+                                <th class="weekend">Sa</th>
+                                <th class="weekend">So</th>
                             </tr>
-                        </f:for>
-                    </tbody>
-                </table>
-            </ms:calendar>
-        </f:then>
-        <f:else>
-            <p>Keine Daten für {currentMonth}/{currentYear}</p>
-        </f:else>
-    </f:if>
-    
-    <br><br>
-    
-    <!-- Следващ месец -->
-    <f:if condition="{nextMymonth}">
-        <f:then>
-            <ms:calendar month="{nextMonth}" year="{nextYear}" days="{nextDays}">
-                <h2>{monthName} {year}</h2>
-                
-                <table class="calendar-table">
-                    <thead>
-                        <tr>
-                            <th>Mo</th>
-                            <th>Di</th>
-                            <th>Mi</th>
-                            <th>Do</th>
-                            <th>Fr</th>
-                            <th>Sa</th>
-                            <th>So</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <f:for each="{calendar}" as="week">
+                        </thead>
+                        <tbody>
+                            <f:for each="{calendar}" as="week">
+                                <tr>
+                                    <f:for each="{week}" as="cell">
+                                        <td class="
+                                            {f:if(condition: cell.hasData, then: 'has-data')}
+                                            {f:if(condition: cell.isToday, then: ' today')}
+                                            {f:if(condition: cell.isWeekend, then: ' weekend')}
+                                            {f:if(condition: '{cell.day} == 0', then: ' empty')}
+                                        ">
+                                            <f:if condition="{cell.day}">
+                                                <f:then>
+                                                    <div class="day-cell">
+                                                        <span class="day-number">{cell.day}</span>
+                                                        
+                                                        <f:if condition="{cell.hasData}">
+                                                            <div class="events-list">
+                                                                <f:for each="{cell.dayEvents}" as="event">
+                                                                    <f:link.action 
+                                                                        action="show" 
+                                                                        controller="Myday" 
+                                                                        arguments="{myday: event}"
+                                                                        class="event-link"
+                                                                        title="Details anzeigen">
+                                                                        <span class="event-time">
+                                                                            <f:if condition="{event.starttime}">
+                                                                                {event.starttime}
+                                                                            </f:if>
+                                                                            <f:if condition="{event.endtime}">
+                                                                                - {event.endtime}
+                                                                            </f:if>
+                                                                        </span>
+                                                                        <f:if condition="{event.workshift}">
+                                                                            <span class="event-workshift">{event.workshift}</span>
+                                                                        </f:if>
+                                                                    </f:link.action>
+                                                                </f:for>
+                                                            </div>
+                                                        </f:if>
+                                                    </div>
+                                                </f:then>
+                                                <f:else>
+                                                    <span class="empty-cell">&nbsp;</span>
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                    </f:for>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </ms:calendar>
+            </f:then>
+            <f:else>
+                <p>Keine Daten für {currentMonth}/{currentYear}</p>
+            </f:else>
+        </f:if>
+        
+        <br><br>
+        
+        <!-- Следващ месец -->
+        <f:if condition="{nextMymonth}">
+            <f:then>
+                <ms:calendar month="{nextMonth}" year="{nextYear}" days="{nextDays}">
+                    <div class="month-header">
+                        <h2>{monthName} {year}</h2>
+                        <div class="month-actions">
+                            <f:link.action 
+                                action="new" 
+                                controller="Myday" 
+                                arguments="{mymonth: nextMymonth.uid, monthNumber: nextMonth, year: nextYear}"
+                                class="btn btn-success">
+                                + Neue Tage
+                            </f:link.action>
+                        </div>
+                    </div>
+                    
+                    <table class="calendar-table">
+                        <thead>
                             <tr>
-                                <f:for each="{week}" as="cell">
-                                    <td class="
-                                        {f:if(condition: cell.hasData, then: 'has-data')}
-                                        {f:if(condition: cell.isToday, then: ' today')}
-                                        {f:if(condition: cell.isWeekend, then: ' weekend')}
-                                        {f:if(condition: '{cell.day} == 0', then: ' empty')}
-                                    ">
-                                        <f:if condition="{cell.day}">
-                                            <f:then>
-                                                <f:if condition="{cell.hasData}">
-                                                    <f:then>
-                                                        <f:link.action 
-                                                            action="show" 
-                                                            controller="Myday" 
-                                                            arguments="{myday: cell.dayObject}">
-                                                            {cell.day}
-                                                        </f:link.action>
-                                                    </f:then>
-                                                    <f:else>
-                                                        <span class="no-data">{cell.day}</span>
-                                                    </f:else>
-                                                </f:if>
-                                            </f:then>
-                                            <f:else>
-                                                <span class="empty-cell">&nbsp;</span>
-                                            </f:else>
-                                        </f:if>
-                                    </td>
-                                </f:for>
+                                <th>Mo</th>
+                                <th>Di</th>
+                                <th>Mi</th>
+                                <th>Do</th>
+                                <th>Fr</th>
+                                <th class="weekend">Sa</th>
+                                <th class="weekend">So</th>
                             </tr>
-                        </f:for>
-                    </tbody>
-                </table>
-            </ms:calendar>
-        </f:then>
-        <f:else>
-            <p>Keine Daten für {nextMonth}/{nextYear}</p>
-        </f:else>
-    </f:if>
+                        </thead>
+                        <tbody>
+                            <f:for each="{calendar}" as="week">
+                                <tr>
+                                    <f:for each="{week}" as="cell">
+                                        <td class="
+                                            {f:if(condition: cell.hasData, then: 'has-data')}
+                                            {f:if(condition: cell.isToday, then: ' today')}
+                                            {f:if(condition: cell.isWeekend, then: ' weekend')}
+                                            {f:if(condition: '{cell.day} == 0', then: ' empty')}
+                                        ">
+                                            <f:if condition="{cell.day}">
+                                                <f:then>
+                                                    <div class="day-cell">
+                                                        <span class="day-number">{cell.day}</span>
+                                                        
+                                                        <f:if condition="{cell.hasData}">
+                                                            <div class="events-list">
+                                                                <f:for each="{cell.dayEvents}" as="event">
+                                                                    <f:link.action 
+                                                                        action="show" 
+                                                                        controller="Myday" 
+                                                                        arguments="{myday: event}"
+                                                                        class="event-link"
+                                                                        title="Details anzeigen">
+                                                                        <span class="event-time">
+                                                                            <f:if condition="{event.starttime}">
+                                                                                {event.starttime}
+                                                                            </f:if>
+                                                                            <f:if condition="{event.endtime}">
+                                                                                - {event.endtime}
+                                                                            </f:if>
+                                                                        </span>
+                                                                        <f:if condition="{event.workshift}">
+                                                                            <span class="event-workshift">{event.workshift}</span>
+                                                                        </f:if>
+                                                                    </f:link.action>
+                                                                </f:for>
+                                                            </div>
+                                                        </f:if>
+                                                    </div>
+                                                </f:then>
+                                                <f:else>
+                                                    <span class="empty-cell">&nbsp;</span>
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                    </f:for>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </ms:calendar>
+            </f:then>
+            <f:else>
+                <p>Keine Daten für {nextMonth}/{nextYear}</p>
+            </f:else>
+        </f:if>
+    </div>
     
     <hr>
-
-
-
- 
-
-
-
     
 </f:section>
 </html>
