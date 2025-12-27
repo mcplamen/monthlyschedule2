@@ -34,6 +34,24 @@ class MydayController extends ActionController
         $this->mymonthRepository = $mymonthRepository;
     }
 	
+	public function initializeCreateAction(): void
+	{
+		$this->arguments
+			->getArgument('newMyday')
+			->getPropertyMappingConfiguration()
+			        ->allowProperties(
+					'dayname',
+					'timeslot',
+					'timeslotend',
+					'confirm',
+					'person',
+					'email',
+					'topic',
+					'mymonth'   // 👈 КРИТИЧНО
+        );
+	}
+
+	
 	private LoggerInterface $logger;
 
     public function __construct(LoggerInterface $logger)
@@ -74,6 +92,7 @@ class MydayController extends ActionController
  */
 public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
 {
+
 $this->logger->debug('newAction called', [
             'mymonth' => $mymonth,
             'monthNumber' => $monthNumber,
@@ -99,6 +118,10 @@ $this->logger->debug('newAction called', [
             $mydays = $this->mydayRepository->findByMymonth($mymonth);
             
             echo "Days found: " . $mydays->count() . "<br>";
+			
+			if ($mymonthObject !== null) {
+            $newMyday->setMymonth($mymonthObject); // 🔥 КЛЮЧОВО
+			}
             
             // Ако не са подадени month и year, вземи от обекта
             if ($monthNumber == 0) {
@@ -129,6 +152,10 @@ $this->logger->debug('newAction called', [
      */
     public function createAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday)
     {
+    echo '<pre>';
+    echo 'CREATE ACTION HIT' . PHP_EOL;
+    var_dump($_POST);
+    exit;
         $this->addFlashMessage('The object was created.');
         $this->mydayRepository->add($newMyday);
         $this->redirect('list');

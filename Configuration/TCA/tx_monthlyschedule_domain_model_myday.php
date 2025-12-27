@@ -185,11 +185,10 @@ return [
 				'type' => 'select',
 				'renderType' => 'selectSingle',
 				'foreign_table' => 'tx_monthlyschedule_domain_model_mymonth',
-				'foreign_field' => 'uid',  // важно!
-				'default' => 0,
 				'minitems' => 0,
 				'maxitems' => 1,
 			],
 		],
+
     ],
 ];

@@ -24,7 +24,7 @@
 			<f:form action="create" name="newMyday" object="{newMyday}" pluginName="Monthlyschedule">
 				<f:if condition="{newMyday.mymonth}">
 					<p><strong>Adding day to month:</strong> {newMyday.mymonth.mymonth}</p>
-					<f:form.hidden property="mymonth" value="{newMyday.mymonth.uid}" />
+					<f:form.hidden property="mymonth" />
 				</f:if>
 				
 				<f:render partial="Myday/FormFields" />
