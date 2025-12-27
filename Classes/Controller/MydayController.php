@@ -4,6 +4,8 @@ namespace Mcplamen\Monthlyschedule\Controller;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use Mcplamen\Monthlyschedule\Domain\Repository\MydayRepository;
 use Mcplamen\Monthlyschedule\Domain\Repository\MymonthRepository;
+use Mcplamen\Monthlyschedule\Domain\Model\Myday;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 class MydayController extends ActionController
@@ -98,20 +100,24 @@ $this->logger->debug('newAction called', [
             'monthNumber' => $monthNumber,
             'year' => $year
         ]);
-    $mymonthObject = null;
-    $mydays = [];
+ //   $mymonthObject = null;
+//    $mydays = [];
     
-    // Debug
-    echo "<h3>DEBUG in controller:</h3>";
-    echo "mymonth = " . $mymonth . "<br>";
-    echo "monthNumber = " . $monthNumber . "<br>";
-    echo "year = " . $year . "<br>";
+// ✅ ЗАДЪЛЖИТЕЛНО – създаваме обекта
+    $newMyday = new Myday();
+
+    // DEBUG – потвърждение
+    echo 'newMyday created: ';
+    var_dump($newMyday !== null);
+    echo '<br>';
     
     if ($mymonth > 0) {
         // Зареждаме mymonth обекта
         $mymonthObject = $this->mymonthRepository->findByUid($mymonth);
         
-        echo "mymonthObject found: " . ($mymonthObject ? 'YES' : 'NO') . "<br>";
+                echo 'mymonthObject found: ';
+        var_dump($mymonthObject !== null);
+        echo '<br>';
         
         if ($mymonthObject !== null) {
             // Използваме repository метода
@@ -122,6 +128,7 @@ $this->logger->debug('newAction called', [
 			if ($mymonthObject !== null) {
             $newMyday->setMymonth($mymonthObject); // 🔥 КЛЮЧОВО
 			}
+
             
             // Ако не са подадени month и year, вземи от обекта
             if ($monthNumber == 0) {

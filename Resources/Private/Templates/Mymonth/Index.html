@@ -62,17 +62,17 @@
                                                                         arguments="{myday: event}"
                                                                         class="event-link"
                                                                         title="Details anzeigen">
-                                                                        <span class="event-time">
-                                                                            <f:if condition="{event.starttime}">
-                                                                                {event.starttime}
-                                                                            </f:if>
-                                                                            <f:if condition="{event.endtime}">
-                                                                                - {event.endtime}
-                                                                            </f:if>
-                                                                        </span>
-                                                                        <f:if condition="{event.workshift}">
-                                                                            <span class="event-workshift">{event.workshift}</span>
-                                                                        </f:if>
+																		<span class="event-time">
+																			<f:if condition="{event.timeslot}">
+																				{event.timeslot}
+																			</f:if>
+																			<f:if condition="{event.timeslotend}">
+																				- {event.timeslotend}
+																			</f:if>
+																		</span>
+																		<f:if condition="{event.workshift}">
+																			<span class="event-workshift">{event.workshift}</span>
+																		</f:if>
                                                                     </f:link.action>
                                                                 </f:for>
                                                             </div>
