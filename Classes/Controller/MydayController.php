@@ -205,4 +205,62 @@ $this->logger->debug('newAction called', [
         $this->mydayRepository->remove($myday);
         $this->redirect('list');
     }
+	
+	/**
+	 * AJAX action to show event details
+	 *
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
+	 * @return string
+	 */
+	public function ajaxShowAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
+	{
+		  // DEBUG
+    error_log('ajaxShowAction called for myday UID: ' . $myday->getUid());
+    
+		$this->view->assign('myday', $myday);
+		
+		// Return only the content without layout
+		return $this->view->render();
+	}
+	
+	/**
+	 * AJAX action to update event details
+	 *
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
+	 * @return string
+	 */
+	public function ajaxUpdateAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
+	{
+		// Get POST data
+		if ($this->request->hasArgument('data')) {
+			$data = $this->request->getArgument('data');
+			
+			// Update only editable fields
+			if (isset($data['person'])) {
+				$myday->setPerson($data['person']);
+			}
+			
+			if (isset($data['email'])) {
+				$myday->setEmail($data['email']);
+			}
+			
+			if (isset($data['topic'])) {
+				$myday->setTopic($data['topic']);
+			}
+			
+			// Save to database
+			$this->mydayRepository->update($myday);
+			
+			// Return JSON response
+			header('Content-Type: application/json');
+			echo json_encode(['success' => true, 'message' => 'Updated successfully']);
+			exit;
+		}
+		
+		// Error response
+		header('Content-Type: application/json');
+		echo json_encode(['success' => false, 'message' => 'No data provided']);
+		exit;
+	}
+	
 }

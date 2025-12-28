@@ -1,0 +1,37 @@
+<div class="event-details">
+    <form id="eventForm" data-uid="{myday.uid}">
+        <div class="form-group">
+            <label><strong>Day:</strong></label>
+            <p>{myday.dayname}</p>
+        </div>
+        
+        <div class="form-group">
+            <label><strong>Timeslot:</strong></label>
+            <p>{myday.timeslot} - {myday.timeslotend}</p>
+        </div>
+        
+        <div class="form-group">
+            <label><strong>Workshift:</strong></label>
+            <p>{myday.workshift}</p>
+        </div>
+        
+        <div class="form-group">
+            <label for="person">Person:</label>
+            <input type="text" name="person" id="person" value="{myday.person}" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" name="email" id="email" value="{myday.email}" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="topic">Topic:</label>
+            <textarea name="topic" id="topic" class="form-control" rows="3">{myday.topic}</textarea>
+        </div>
+    </form>
+</div>
+
+<script>
+// No script needed here anymore - handled in Index.html!
+</script>
