@@ -159,10 +159,10 @@ $this->logger->debug('newAction called', [
      */
     public function createAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday)
     {
-    echo '<pre>';
-    echo 'CREATE ACTION HIT' . PHP_EOL;
-    var_dump($_POST);
-    exit;
+//    echo '<pre>';
+//    echo 'CREATE ACTION HIT' . PHP_EOL;
+//    var_dump($_POST);
+//    exit;
         $this->addFlashMessage('The object was created.');
         $this->mydayRepository->add($newMyday);
         $this->redirect('list');

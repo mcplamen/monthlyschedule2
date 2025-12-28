@@ -28,7 +28,7 @@
 				</f:if>
 				
 				<f:render partial="Myday/FormFields" />
-				<f:form.hidden property="mymonth" />
+				<f:form.hidden name="newMyday[mymonth]" value="{mymonthObject}" />
 				<f:form.submit value="Create new" />
 			</f:form>
 		</div>
