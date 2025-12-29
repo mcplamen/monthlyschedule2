@@ -210,90 +210,97 @@
 </div>
 
 <script>
-jQuery(document).ready(function($) {
-    // Сега можеш да използваш $ вътре в тази функция
+// Open modal function (Pure JavaScript - No jQuery)
+function openEventModal(mydayUid) {
+    console.log('Opening modal for UID:', mydayUid);
     
-    // Open modal function
-    window.openEventModal = function(mydayUid) {
-        console.log('Opening modal for UID:', mydayUid);
-        
-        // Show modal
-        $('#eventModal').modal('show');
-        
-        // Reset save button
-        $('#saveBtn').hide();
-        
-        // Show loading spinner
-        $('#modalBody').html('<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>');
-        
-        // Build URL with parameters
-        var url = window.location.pathname + 
-            '?tx_monthlyschedule_monthlyschedule[action]=ajaxShow' +
-            '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
-            '&tx_monthlyschedule_monthlyschedule[myday]=' + mydayUid;
-        
-        console.log('AJAX URL:', url);
-        
-        // Fetch event data via AJAX
-        $.ajax({
-            url: url,
-            method: 'GET',
-            success: function(html) {
-                console.log('AJAX success, content length:', html.length);
-                console.log('Content:', html);
-                $('#modalBody').html(html);
-                $('#saveBtn').show();
-            },
-            error: function(xhr, status, error) {
-                console.error('AJAX error:', status, error);
-                console.log('Response:', xhr.responseText);
-                $('#modalBody').html('<div class="alert alert-danger">Error loading event details: ' + error + '</div>');
-            }
+    // Get modal element
+    var modal = document.getElementById('eventModal');
+    var modalBody = document.getElementById('modalBody');
+    var saveBtn = document.getElementById('saveBtn');
+    
+    // Show modal (Bootstrap 4)
+    var bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+    
+    // Hide save button
+    saveBtn.style.display = 'none';
+    
+    // Show loading spinner
+    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
+    
+    // Build URL
+    var url = window.location.pathname + 
+        '?tx_monthlyschedule_monthlyschedule[action]=ajaxShow' +
+        '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
+        '&tx_monthlyschedule_monthlyschedule[myday]=' + mydayUid;
+    
+    console.log('AJAX URL:', url);
+    
+    // Fetch data
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            console.log('AJAX success, content length:', html.length);
+            modalBody.innerHTML = html;
+            saveBtn.style.display = 'block';
+        })
+        .catch(error => {
+            console.error('AJAX error:', error);
+            modalBody.innerHTML = '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
         });
-    };
-    
-    // Save button handler
-    $(document).on('click', '#saveBtn', function() {
-        const form = $('#eventForm');
-        const uid = form.data('uid');
+}
+
+// Save button handler
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        var form = document.getElementById('eventForm');
+        var uid = form.getAttribute('data-uid');
         
         // Get form data
-        const formData = {
-            person: form.find('[name="person"]').val(),
-            email: form.find('[name="email"]').val(),
-            topic: form.find('[name="topic"]').val()
+        var formData = {
+            person: form.querySelector('[name="person"]').value,
+            email: form.querySelector('[name="email"]').value,
+            topic: form.querySelector('[name="topic"]').value
         };
         
+        // Build POST data
+        var postData = new URLSearchParams();
+        postData.append('tx_monthlyschedule_monthlyschedule[action]', 'ajaxUpdate');
+        postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
+        postData.append('tx_monthlyschedule_monthlyschedule[myday]', uid);
+        postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
+        postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
+        postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
+        
         // AJAX save
-        $.ajax({
-            url: window.location.pathname,
+        fetch(window.location.pathname, {
             method: 'POST',
-            data: {
-                type: 1234,
-                tx_monthlyschedule_monthlyschedule: {
-                    action: 'ajaxUpdate',
-                    controller: 'Myday',
-                    myday: uid,
-                    data: formData
-                }
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
             },
-            success: function(response) {
-                if(response.success) {
-                    // Show success message
-                    $('#modalBody').prepend('<div class="alert alert-success">Saved successfully!</div>');
-                    
-                    // Close modal after 1 second and reload
-                    setTimeout(function() {
-                        $('#eventModal').modal('hide');
-                        location.reload();
-                    }, 1000);
-                } else {
-                    $('#modalBody').prepend('<div class="alert alert-danger">Error saving changes.</div>');
-                }
-            },
-            error: function() {
-                $('#modalBody').prepend('<div class="alert alert-danger">Error saving changes.</div>');
+            body: postData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                // Show success message
+                var modalBody = document.getElementById('modalBody');
+                modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success">Saved successfully!</div>');
+                
+                // Close modal after 1 second and reload
+                setTimeout(function() {
+                    var modal = document.getElementById('eventModal');
+                    var bsModal = bootstrap.Modal.getInstance(modal);
+                    bsModal.hide();
+                    location.reload();
+                }, 1000);
+            } else {
+                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
             }
+        })
+        .catch(error => {
+            document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
         });
     });
 });
