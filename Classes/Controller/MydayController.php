@@ -210,30 +210,53 @@ $this->logger->debug('newAction called', [
 	 * AJAX action to show event details
 	 *
 	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
-	 * @return string
+	 * @return void
 	 */
 	public function ajaxShowAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
 	{
-		  // DEBUG
-    error_log('ajaxShowAction called for myday UID: ' . $myday->getUid());
-    
+		// Assign data to view
 		$this->view->assign('myday', $myday);
 		
-		// Return only the content without layout
-		return $this->view->render();
+		// Render the partial directly
+		$standaloneView = \TYPO3\CMS\Fluid\View\StandaloneView::class;
+		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($standaloneView);
+		
+		// Set template path
+		$view->setTemplatePathAndFilename(
+			\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(
+				'EXT:monthlyschedule/Resources/Private/Templates/Myday/AjaxShow.html'
+			)
+		);
+		
+		// Assign variables
+		$view->assign('myday', $myday);
+		
+		// Render and output
+		$content = $view->render();
+		
+		// Output directly
+		header('Content-Type: text/html; charset=utf-8');
+		echo $content;
+		exit;
 	}
 	
 	/**
 	 * AJAX action to update event details
 	 *
 	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
-	 * @return string
+	 * @return void
 	 */
 	public function ajaxUpdateAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
 	{
-		// Get POST data
-		if ($this->request->hasArgument('data')) {
-			$data = $this->request->getArgument('data');
+		// Get POST data from tx_monthlyschedule_monthlyschedule[data]
+		$requestArguments = $this->request->getArguments();
+		
+		error_log('ajaxUpdateAction - Request arguments: ' . print_r($requestArguments, true));
+		
+		if (isset($requestArguments['data'])) {
+			$data = $requestArguments['data'];
+			
+			error_log('Data received: ' . print_r($data, true));
 			
 			// Update only editable fields
 			if (isset($data['person'])) {
@@ -251,6 +274,14 @@ $this->logger->debug('newAction called', [
 			// Save to database
 			$this->mydayRepository->update($myday);
 			
+			// Persist changes
+			$persistenceManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+				\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager::class
+			);
+			$persistenceManager->persistAll();
+			
+			error_log('Myday updated successfully');
+			
 			// Return JSON response
 			header('Content-Type: application/json');
 			echo json_encode(['success' => true, 'message' => 'Updated successfully']);
@@ -258,6 +289,7 @@ $this->logger->debug('newAction called', [
 		}
 		
 		// Error response
+		error_log('ajaxUpdateAction - No data provided');
 		header('Content-Type: application/json');
 		echo json_encode(['success' => false, 'message' => 'No data provided']);
 		exit;

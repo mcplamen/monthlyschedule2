@@ -57,7 +57,7 @@
                                                             <div class="events-list">
                                                                 <f:for each="{cell.dayEvents}" as="event">
     <a href="#" 
-       data-myday-uid="{event.uid}"
+       onclick="openEventModal({event.uid}); return false;"
        class="event-link"
        title="Click to view/edit details">
 																		<span class="event-time">
@@ -144,7 +144,7 @@
                                                             <div class="events-list">
                                                                 <f:for each="{cell.dayEvents}" as="event">
     <a href="#" 
-       data-myday-uid="{event.uid}"
+       onclick="openEventModal({event.uid}); return false;"
        class="event-link"
        title="Click to view/edit details">
                                                                         <span class="event-time">
@@ -184,35 +184,44 @@
     
     <hr>
     
-
+	<!-- Bootstrap Modal за показване/редакция на събитие -->
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveBtn" style="display:none;">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-<script>
-// Open modal function (Bootstrap 4 compatible)
+// Open modal function (Pure JavaScript - No jQuery)
 function openEventModal(mydayUid) {
     console.log('Opening modal for UID:', mydayUid);
     
     // Get modal element
-    var modalEl = document.getElementById('eventModal');
+    var modal = document.getElementById('eventModal');
     var modalBody = document.getElementById('modalBody');
     var saveBtn = document.getElementById('saveBtn');
     
-    // Show modal (Bootstrap 4 way - using jQuery that Bootstrap 4 requires)
-    var $modal = window.jQuery ? jQuery(modalEl) : null;
-    if ($modal) {
-        $modal.modal('show');
-    } else {
-        // Fallback if jQuery not available
-        modalEl.classList.add('show');
-        modalEl.style.display = 'block';
-        document.body.classList.add('modal-open');
-        
-        // Add backdrop
-        var backdrop = document.createElement('div');
-        backdrop.className = 'modal-backdrop fade show';
-        backdrop.id = 'modalBackdrop';
-        document.body.appendChild(backdrop);
-    }
+    // Show modal (Bootstrap 4)
+    var bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
     
     // Hide save button
     saveBtn.style.display = 'none';
@@ -242,168 +251,60 @@ function openEventModal(mydayUid) {
         });
 }
 
-// Helper function to close modal (Bootstrap 4)
-function closeModal() {
-    var modalEl = document.getElementById('eventModal');
-    var $modal = window.jQuery ? jQuery(modalEl) : null;
-    
-    if ($modal) {
-        $modal.modal('hide');
-    } else {
-        // Manual close
-        modalEl.classList.remove('show');
-        modalEl.style.display = 'none';
-        document.body.classList.remove('modal-open');
-        
-        // Remove backdrop
-        var backdrop = document.getElementById('modalBackdrop');
-        if (backdrop) {
-            backdrop.remove();
-        }
-    }
-}
-
-// All event handlers when DOM is ready
+// Save button handler
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Event delegation - handle clicks on event links
-    document.addEventListener('click', function(e) {
-        var target = e.target.closest('.event-link');
-        if (target && target.hasAttribute('data-myday-uid')) {
-            e.preventDefault();
-            var mydayUid = target.getAttribute('data-myday-uid');
-            openEventModal(mydayUid);
-        }
-    });
-    
-    // Save button handler
-    var saveBtn = document.getElementById('saveBtn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            var form = document.getElementById('eventForm');
-            if (!form) {
-                console.error('Form not found');
-                return;
+    document.getElementById('saveBtn').addEventListener('click', function() {
+        var form = document.getElementById('eventForm');
+        var uid = form.getAttribute('data-uid');
+        
+        // Get form data
+        var formData = {
+            person: form.querySelector('[name="person"]').value,
+            email: form.querySelector('[name="email"]').value,
+            topic: form.querySelector('[name="topic"]').value
+        };
+        
+        // Build POST data
+        var postData = new URLSearchParams();
+        postData.append('tx_monthlyschedule_monthlyschedule[action]', 'ajaxUpdate');
+        postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
+        postData.append('tx_monthlyschedule_monthlyschedule[myday]', uid);
+        postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
+        postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
+        postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
+        
+        // AJAX save
+        fetch(window.location.pathname, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: postData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                // Show success message
+                var modalBody = document.getElementById('modalBody');
+                modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success">Speichern erfolgreich! <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>');
+                
+                // Close modal after 1 second and reload
+                setTimeout(function() {
+                    var modal = document.getElementById('eventModal');
+                    var bsModal = bootstrap.Modal.getInstance(modal);
+                    bsModal.hide();
+                    location.reload();
+                }, 1000);
+            } else {
+                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
             }
-            
-            var uid = form.getAttribute('data-uid');
-            
-            // Get form data
-            var personInput = form.querySelector('[name="person"]');
-            var emailInput = form.querySelector('[name="email"]');
-            var topicInput = form.querySelector('[name="topic"]');
-            
-            if (!personInput || !emailInput || !topicInput) {
-                console.error('Form inputs not found');
-                return;
-            }
-            
-            var formData = {
-                person: personInput.value,
-                email: emailInput.value,
-                topic: topicInput.value
-            };
-            
-            console.log('Saving data:', formData);
-            
-            // Disable save button during save
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
-            
-            // Build POST data
-            var postData = new URLSearchParams();
-            postData.append('tx_monthlyschedule_monthlyschedule[action]', 'ajaxUpdate');
-            postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
-            postData.append('tx_monthlyschedule_monthlyschedule[myday]', uid);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
-            
-            // AJAX save
-            fetch(window.location.pathname, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: postData
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                
-                // Remove any existing alerts
-                var existingAlerts = document.querySelectorAll('#modalBody .alert');
-                existingAlerts.forEach(function(alert) {
-                    alert.remove();
-                });
-                
-                if(data.success) {
-                    // Show success message
-                    var modalBody = document.getElementById('modalBody');
-                    modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade show" role="alert">Saved successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                    
-                    // Re-enable save button
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                    
-                    // User closes modal manually, then we reload
-                    var modalEl = document.getElementById('eventModal');
-                    if (window.jQuery) {
-                        jQuery(modalEl).one('hidden.bs.modal', function() {
-                            location.reload();
-                        });
-                    }
-                } else {
-                    document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error: ' + (data.message || 'Unknown error') + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                    
-                    // Re-enable save button
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                }
-            })
-            .catch(error => {
-                console.error('Save error:', error);
-                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error saving changes: ' + error + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                
-                // Re-enable save button
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save';
-            });
+        })
+        .catch(error => {
+            document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
         });
-    }
+    });
 });
 </script>
-
-
-<!-- Bootstrap Modal за показване/редакция на събитие -->
-<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="text-center">
-                    <div class="spinner-border" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveBtn" style="display:none;">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
 	
 </f:section>
 </html>
