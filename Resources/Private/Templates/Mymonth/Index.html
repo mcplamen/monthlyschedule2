@@ -203,7 +203,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveBtn" style="display:none;">Save</button>
+                
+				 
+				<f:if condition="{isAdmin}">
+					<button type="button" class="btn btn-primary" id="saveBtn" style="display:none;">Save</button>
+				</f:if>
             </div>
         </div>
     </div>
@@ -257,12 +261,13 @@ document.addEventListener('DOMContentLoaded', function() {
         var form = document.getElementById('eventForm');
         var uid = form.getAttribute('data-uid');
         
-        // Get form data
-        var formData = {
-            person: form.querySelector('[name="person"]').value,
-            email: form.querySelector('[name="email"]').value,
-            topic: form.querySelector('[name="topic"]').value
-        };
+		// Get form data
+		var formData = {
+			person: personInput.value,
+			email: emailInput.value,
+			topic: topicInput.value,
+			confirm: form.querySelector('[name="confirm"]') ? form.querySelector('[name="confirm"]').checked : false
+		};
         
         // Build POST data
         var postData = new URLSearchParams();

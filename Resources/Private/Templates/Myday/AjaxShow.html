@@ -29,6 +29,15 @@
             <label for="topic">Topic:</label>
             <textarea name="topic" id="topic" class="form-control" rows="3">{myday.topic}</textarea>
         </div>
+		        <!-- Confirm checkbox (само за админи) -->
+        <div class="form-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="confirm" name="confirm" {f:if(condition: myday.confirm, then: 'checked')}>
+                <label class="custom-control-label" for="confirm">
+                    <strong>Confirmed</strong>
+                </label>
+            </div>
+        </div>
     </form>
 </div>
 

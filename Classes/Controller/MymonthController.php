@@ -101,6 +101,9 @@ class MymonthController extends ActionController
 		// Добави mymonths за admin panel
 		$mymonths = $this->mymonthRepository->findAll();
 		
+		// Check if user is logged in
+		$isAdmin = $this->isLoggedInFrontendUser();
+		
 		$this->view->assignMultiple([
 			'currentMonth' => $currentMonth,
 			'currentYear' => $currentYear,
@@ -110,7 +113,8 @@ class MymonthController extends ActionController
 			'nextYear' => $nextYear,
 			'nextMymonth' => $nextMymonth,
 			'nextDays' => $nextDays,
-			'mymonths' => $mymonths
+			'mymonths' => $mymonths,
+			'isAdmin' => $isAdmin  // ДОБАВЕНО
 		]);
 	}
 
@@ -196,4 +200,17 @@ class MymonthController extends ActionController
         $this->mymonthRepository->remove($mymonth);
         $this->redirect('list');
     }
+	
+	/**
+	 * Check if current user is logged in frontend user
+	 *
+	 * @return bool
+	 */
+	protected function isLoggedInFrontendUser()
+	{
+		if (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE']->fe_user) {
+			return (bool)$GLOBALS['TSFE']->fe_user->user['uid'];
+		}
+		return false;
+	}
 }

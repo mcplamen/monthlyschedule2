@@ -214,27 +214,32 @@ $this->logger->debug('newAction called', [
 	 */
 	public function ajaxShowAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
 	{
+		// Check if user is logged in admin
+		$isAdmin = $this->isLoggedInFrontendUser();
+		
 		// Assign data to view
 		$this->view->assign('myday', $myday);
+		$this->view->assign('isAdmin', $isAdmin);
 		
-		// Render the partial directly
-		$standaloneView = \TYPO3\CMS\Fluid\View\StandaloneView::class;
-		$view = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance($standaloneView);
+		// Choose template based on user role
+		$templateName = $isAdmin ? 'AjaxShow' : 'AjaxShowPublic';
 		
-		// Set template path
-		$view->setTemplatePathAndFilename(
+		// Render the template
+		$standaloneView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+			\TYPO3\CMS\Fluid\View\StandaloneView::class
+		);
+		
+		$standaloneView->setTemplatePathAndFilename(
 			\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(
-				'EXT:monthlyschedule/Resources/Private/Templates/Myday/AjaxShow.html'
+				'EXT:monthlyschedule/Resources/Private/Templates/Myday/' . $templateName . '.html'
 			)
 		);
 		
-		// Assign variables
-		$view->assign('myday', $myday);
+		$standaloneView->assign('myday', $myday);
+		$standaloneView->assign('isAdmin', $isAdmin);
 		
-		// Render and output
-		$content = $view->render();
+		$content = $standaloneView->render();
 		
-		// Output directly
 		header('Content-Type: text/html; charset=utf-8');
 		echo $content;
 		exit;
@@ -248,17 +253,12 @@ $this->logger->debug('newAction called', [
 	 */
 	public function ajaxUpdateAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
 	{
-		// Get POST data from tx_monthlyschedule_monthlyschedule[data]
 		$requestArguments = $this->request->getArguments();
-		
-		error_log('ajaxUpdateAction - Request arguments: ' . print_r($requestArguments, true));
 		
 		if (isset($requestArguments['data'])) {
 			$data = $requestArguments['data'];
 			
-			error_log('Data received: ' . print_r($data, true));
-			
-			// Update only editable fields
+			// Update fields
 			if (isset($data['person'])) {
 				$myday->setPerson($data['person']);
 			}
@@ -271,25 +271,69 @@ $this->logger->debug('newAction called', [
 				$myday->setTopic($data['topic']);
 			}
 			
-			// Save to database
+			// Update confirm (only for admins)
+			if (isset($data['confirm'])) {
+				$myday->setConfirm((bool)$data['confirm']);
+			}
+			
+			// Save
 			$this->mydayRepository->update($myday);
 			
-			// Persist changes
 			$persistenceManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
 				\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager::class
 			);
 			$persistenceManager->persistAll();
 			
-			error_log('Myday updated successfully');
-			
-			// Return JSON response
 			header('Content-Type: application/json');
 			echo json_encode(['success' => true, 'message' => 'Updated successfully']);
 			exit;
 		}
 		
-		// Error response
-		error_log('ajaxUpdateAction - No data provided');
+		header('Content-Type: application/json');
+		echo json_encode(['success' => false, 'message' => 'No data provided']);
+		exit;
+	}
+	
+	/**
+	 * Public booking action (for anonymous users)
+	 *
+	 * @param \Mcplamen\Monthlyschedule\Domain\Model\Myday $myday
+	 * @return void
+	 */
+	public function publicBookAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
+	{
+		$requestArguments = $this->request->getArguments();
+		
+		// Check if slot is already booked
+		if ($myday->getPerson()) {
+			header('Content-Type: application/json');
+			echo json_encode(['success' => false, 'message' => 'This time slot is already booked']);
+			exit;
+		}
+		
+		if (isset($requestArguments['data'])) {
+			$data = $requestArguments['data'];
+			
+			// Update fields
+			$myday->setPerson($data['person'] ?? '');
+			$myday->setEmail($data['email'] ?? '');
+			$myday->setTopic($data['topic'] ?? '');
+			$myday->setConfirm(false); // Not confirmed by default
+			
+			// Save
+			$this->mydayRepository->update($myday);
+			
+			$persistenceManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+				\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager::class
+			);
+			$persistenceManager->persistAll();
+			
+			// Return success
+			header('Content-Type: application/json');
+			echo json_encode(['success' => true, 'message' => 'Booking successful']);
+			exit;
+		}
+		
 		header('Content-Type: application/json');
 		echo json_encode(['success' => false, 'message' => 'No data provided']);
 		exit;

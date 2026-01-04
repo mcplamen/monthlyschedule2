@@ -8,12 +8,12 @@ defined('TYPO3') || die();
 		[
 			// ALL allowed actions
 			\Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'index, list, show, new, create, edit, update, delete',
-			\Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, list, show, new, create, edit, update, delete, select, ajaxShow, ajaxUpdate'
+			\Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, list, show, new, create, edit, update, delete, select, ajaxShow, ajaxUpdate, publicBook'
 		],
 		[
 			// Actions that should NOT be cached
 			\Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'index, new, create, edit, update, delete',
-			\Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, new, create, edit, update, delete, select, ajaxShow, ajaxUpdate'
+			\Mcplamen\Monthlyschedule\Controller\MydayController::class => 'index, new, create, edit, update, delete, select, ajaxShow, ajaxUpdate, publicBook'
 		]
 	);
 

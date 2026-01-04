@@ -1,0 +1,90 @@
+<div class="event-details public-view">
+    <div class="alert alert-info">
+        <strong>Day {myday.dayname}:</strong> {myday.timeslot} - {myday.timeslotend}
+    </div>
+    
+    <f:if condition="{myday.person}">
+        <f:then>
+            <div class="alert alert-warning">
+                <strong>This time slot is already booked.</strong>
+            </div>
+        </f:then>
+        <f:else>
+            <div class="alert alert-success">
+                <strong>This time slot is available!</strong>
+            </div>
+            
+            <form id="bookingForm" data-myday-uid="{myday.uid}">
+                <div class="form-group">
+                    <label for="person">Your Name: *</label>
+                    <input type="text" name="person" id="person" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Your Email: *</label>
+                    <input type="email" name="email" id="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="topic">Topic/Reason:</label>
+                    <textarea name="topic" id="topic" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-success btn-block">Book this time slot</button>
+            </form>
+        </f:else>
+    </f:if>
+</div>
+
+<script>
+// Handle booking form submission
+document.getElementById('bookingForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    var form = this;
+    var mydayUid = form.getAttribute('data-myday-uid');
+    
+    var formData = {
+        person: form.querySelector('[name="person"]').value,
+        email: form.querySelector('[name="email"]').value,
+        topic: form.querySelector('[name="topic"]').value
+    };
+    
+    // Build POST data
+    var postData = new URLSearchParams();
+    postData.append('tx_monthlyschedule_monthlyschedule[action]', 'publicBook');
+    postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
+    postData.append('tx_monthlyschedule_monthlyschedule[myday]', mydayUid);
+    postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
+    postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
+    postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
+    
+    // AJAX save
+    fetch(window.location.pathname, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: postData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success) {
+            form.innerHTML = '<div class="alert alert-success">Booking successful! We will contact you soon.</div>';
+            
+            setTimeout(function() {
+                var modalEl = document.getElementById('eventModal');
+                if (window.jQuery) {
+                    jQuery(modalEl).modal('hide');
+                }
+                location.reload();
+            }, 2000);
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        alert('Error booking: ' + error);
+    });
+});
+</script>
