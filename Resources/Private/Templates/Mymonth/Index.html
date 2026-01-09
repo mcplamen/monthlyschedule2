@@ -215,20 +215,47 @@
 
 <script>
 // Open modal function (Pure JavaScript - No jQuery)
+// Open modal function (Bootstrap 4 compatible)
 function openEventModal(mydayUid) {
     console.log('Opening modal for UID:', mydayUid);
     
     // Get modal element
-    var modal = document.getElementById('eventModal');
+    var modalEl = document.getElementById('eventModal');
     var modalBody = document.getElementById('modalBody');
-    var saveBtn = document.getElementById('saveBtn');
+    var saveBtn = document.getElementById('saveBtn'); // Може да е null ако не е логнат
+	if (saveBtn) {
+    saveBtn.addEventListener('click', function() {
+        var form = document.getElementById('eventForm');
+        if (!form) {
+            console.error('Form not found');
+            return;
+        }
+        
+        // ... rest of the code stays the same
+    });
+	}
     
-    // Show modal (Bootstrap 4)
-    var bsModal = new bootstrap.Modal(modal);
-    bsModal.show();
+    // Show modal (Bootstrap 4 way - using jQuery that Bootstrap 4 requires)
+    var $modal = window.jQuery ? jQuery(modalEl) : null;
+    if ($modal) {
+        $modal.modal('show');
+    } else {
+        // Fallback if jQuery not available
+        modalEl.classList.add('show');
+        modalEl.style.display = 'block';
+        document.body.classList.add('modal-open');
+        
+        // Add backdrop
+        var backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop fade show';
+        backdrop.id = 'modalBackdrop';
+        document.body.appendChild(backdrop);
+    }
     
-    // Hide save button
-    saveBtn.style.display = 'none';
+    // Hide save button only if it exists
+    if (saveBtn) {
+        saveBtn.style.display = 'none';
+    }
     
     // Show loading spinner
     modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
@@ -247,7 +274,11 @@ function openEventModal(mydayUid) {
         .then(html => {
             console.log('AJAX success, content length:', html.length);
             modalBody.innerHTML = html;
-            saveBtn.style.display = 'block';
+            
+            // Show save button only if it exists
+            if (saveBtn) {
+                saveBtn.style.display = 'block';
+            }
         })
         .catch(error => {
             console.error('AJAX error:', error);

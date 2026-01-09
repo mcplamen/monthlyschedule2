@@ -217,6 +217,8 @@ $this->logger->debug('newAction called', [
 		// Check if user is logged in admin
 		$isAdmin = $this->isLoggedInFrontendUser();
 		
+		error_log('ajaxShowAction - myday UID: ' . $myday->getUid() . ', isAdmin: ' . ($isAdmin ? 'yes' : 'no'));
+		
 		// Assign data to view
 		$this->view->assign('myday', $myday);
 		$this->view->assign('isAdmin', $isAdmin);
@@ -224,22 +226,17 @@ $this->logger->debug('newAction called', [
 		// Choose template based on user role
 		$templateName = $isAdmin ? 'AjaxShow' : 'AjaxShowPublic';
 		
-		// Render the template
-		$standaloneView = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-			\TYPO3\CMS\Fluid\View\StandaloneView::class
-		);
+		error_log('Using template: ' . $templateName);
 		
-		$standaloneView->setTemplatePathAndFilename(
-			\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(
-				'EXT:monthlyschedule/Resources/Private/Templates/Myday/' . $templateName . '.html'
-			)
-		);
+		// Set template
+		$this->view->setTemplate($templateName);
 		
-		$standaloneView->assign('myday', $myday);
-		$standaloneView->assign('isAdmin', $isAdmin);
+		// Render without layout
+		$content = $this->view->render();
 		
-		$content = $standaloneView->render();
+		error_log('Content length: ' . strlen($content));
 		
+		// Output directly
 		header('Content-Type: text/html; charset=utf-8');
 		echo $content;
 		exit;
@@ -339,4 +336,16 @@ $this->logger->debug('newAction called', [
 		exit;
 	}
 	
+	/**
+	 * Check if current user is logged in frontend user
+	 *
+	 * @return bool
+	 */
+	protected function isLoggedInFrontendUser()
+	{
+		if (isset($GLOBALS['TSFE']) && $GLOBALS['TSFE']->fe_user) {
+			return (bool)$GLOBALS['TSFE']->fe_user->user['uid'];
+		}
+		return false;
+	}
 }
