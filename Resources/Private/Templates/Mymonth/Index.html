@@ -385,22 +385,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     alert.remove();
                 });
                 
-                if(data.success) {
-                    // Show success message
-                    var modalBody = document.getElementById('modalBody');
-                    modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade show" role="alert">Saved successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                    
-                    // Re-enable save button
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                    
-                    // User closes modal manually, then we reload
-                    var modalEl = document.getElementById('eventModal');
-                    if (window.jQuery) {
-                        jQuery(modalEl).one('hidden.bs.modal', function() {
-                            location.reload();
-                        });
-                    }
+			if(data.success) {
+				// Show success message briefly
+				var modalBody = document.getElementById('modalBody');
+				modalBody.innerHTML = '<div class="alert alert-success text-center"><h4>Saved successfully!</h4><p>Reloading...</p></div>';
+				
+				// Reload immediately
+				setTimeout(function() {
+					location.reload();
+				}, 1000);
+
                 } else {
                     document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error: ' + (data.message || 'Unknown error') + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
                     
