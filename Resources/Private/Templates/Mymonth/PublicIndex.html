@@ -1,0 +1,183 @@
+{namespace ms=Mcplamen\Monthlyschedule\ViewHelpers}
+
+<f:layout name="Default" />
+<f:asset.css identifier="calendar-css" href="EXT:monthlyschedule/Resources/Public/Css/calendar.css" />
+
+<f:section name="content">
+
+    <div class="calendar-wrapper public-booking">
+        <h1 class="main-title">Book an Appointment</h1>
+        <p class="subtitle">Select a date and time slot to book your appointment</p>
+        
+        <!-- Текущ месец -->
+        <f:if condition="{currentMymonth}">
+            <f:then>
+                <ms:calendar month="{currentMonth}" year="{currentYear}" days="{currentDays}">
+                    <div class="month-header">
+                        <h2>{monthName} {year}</h2>
+                    </div>
+                    
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>Mo</th>
+                                <th>Di</th>
+                                <th>Mi</th>
+                                <th>Do</th>
+                                <th>Fr</th>
+                                <th class="weekend">Sa</th>
+                                <th class="weekend">So</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{calendar}" as="week">
+                                <tr>
+                                    <f:for each="{week}" as="cell">
+                                        <td class="
+                                            {f:if(condition: cell.hasData, then: 'has-data')}
+                                            {f:if(condition: cell.isToday, then: ' today')}
+                                            {f:if(condition: cell.isWeekend, then: ' weekend')}
+                                            {f:if(condition: '{cell.day} == 0', then: ' empty')}
+                                        ">
+                                            <f:if condition="{cell.day}">
+                                                <f:then>
+                                                    <div class="day-cell">
+                                                        <span class="day-number">{cell.day}</span>
+                                                        
+                                                        <f:if condition="{cell.hasData}">
+                                                            <div class="events-list">
+                                                                <f:for each="{cell.dayEvents}" as="event">
+                                                                    <a href="#" 
+                                                                       data-myday-uid="{event.uid}"
+                                                                       class="event-link {f:if(condition: event.person, then: 'booked', else: 'available')}"
+                                                                       title="{f:if(condition: event.person, then: 'Booked', else: 'Click to book')}">
+                                                                        <span class="event-time">
+                                                                            <f:if condition="{event.timeslot}">
+                                                                                {event.timeslot}
+                                                                            </f:if>
+                                                                            <f:if condition="{event.timeslotend}">
+                                                                                - {event.timeslotend}
+                                                                            </f:if>
+                                                                        </span>
+                                                                        <span class="event-status">
+                                                                            <f:if condition="{event.person}">
+                                                                                <f:then>🔒 Booked</f:then>
+                                                                                <f:else>✓ Available</f:else>
+                                                                            </f:if>
+                                                                        </span>
+                                                                    </a>
+                                                                </f:for>
+                                                            </div>
+                                                        </f:if>
+                                                    </div>
+                                                </f:then>
+                                                <f:else>
+                                                    <span class="empty-cell">&nbsp;</span>
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                    </f:for>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </ms:calendar>
+            </f:then>
+            <f:else>
+                <p class="alert alert-info">No appointments available for {currentMonth}/{currentYear}</p>
+            </f:else>
+        </f:if>
+        
+        <br><br>
+        
+        <!-- Следващ месец -->
+        <f:if condition="{nextMymonth}">
+            <f:then>
+                <ms:calendar month="{nextMonth}" year="{nextYear}" days="{nextDays}">
+                    <div class="month-header">
+                        <h2>{monthName} {year}</h2>
+                    </div>
+                    
+                    <table class="calendar-table">
+                        <thead>
+                            <tr>
+                                <th>Mo</th>
+                                <th>Di</th>
+                                <th>Mi</th>
+                                <th>Do</th>
+                                <th>Fr</th>
+                                <th class="weekend">Sa</th>
+                                <th class="weekend">So</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <f:for each="{calendar}" as="week">
+                                <tr>
+                                    <f:for each="{week}" as="cell">
+                                        <td class="
+                                            {f:if(condition: cell.hasData, then: 'has-data')}
+                                            {f:if(condition: cell.isToday, then: ' today')}
+                                            {f:if(condition: cell.isWeekend, then: ' weekend')}
+                                            {f:if(condition: '{cell.day} == 0', then: ' empty')}
+                                        ">
+                                            <f:if condition="{cell.day}">
+                                                <f:then>
+                                                    <div class="day-cell">
+                                                        <span class="day-number">{cell.day}</span>
+                                                        
+                                                        <f:if condition="{cell.hasData}">
+                                                            <div class="events-list">
+                                                                <f:for each="{cell.dayEvents}" as="event">
+                                                                    <a href="#" 
+                                                                       data-myday-uid="{event.uid}"
+                                                                       class="event-link {f:if(condition: event.person, then: 'booked', else: 'available')}"
+                                                                       title="{f:if(condition: event.person, then: 'Booked', else: 'Click to book')}">
+                                                                        <span class="event-time">
+                                                                            <f:if condition="{event.timeslot}">
+                                                                                {event.timeslot}
+                                                                            </f:if>
+                                                                            <f:if condition="{event.timeslotend}">
+                                                                                - {event.timeslotend}
+                                                                            </f:if>
+                                                                        </span>
+                                                                        <span class="event-status">
+                                                                            <f:if condition="{event.person}">
+                                                                                <f:then>🔒 Booked</f:then>
+                                                                                <f:else>✓ Available</f:else>
+                                                                            </f:if>
+                                                                        </span>
+                                                                    </a>
+                                                                </f:for>
+                                                            </div>
+                                                        </f:if>
+                                                    </div>
+                                                </f:then>
+                                                <f:else>
+                                                    <span class="empty-cell">&nbsp;</span>
+                                                </f:else>
+                                            </f:if>
+                                        </td>
+                                    </f:for>
+                                </tr>
+                            </f:for>
+                        </tbody>
+                    </table>
+                </ms:calendar>
+            </f:then>
+            <f:else>
+                <p class="alert alert-info">No appointments available for {nextMonth}/{nextYear}</p>
+            </f:else>
+        </f:if>
+    </div>
+    
+    <!-- Включи същия script и modal като в Index.html -->
+    <script>
+        // ... същия JavaScript код от Index.html ...
+    </script>
+    
+    <!-- Bootstrap Modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+        <!-- ... същия modal HTML от Index.html ...-->
+    </div>
+    
+</f:section>

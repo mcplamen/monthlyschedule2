@@ -202,6 +202,64 @@ class MymonthController extends ActionController
     }
 	
 	/**
+	 * Public index action - for visitors (no admin panel)
+	 *
+	 * @return void
+	 */
+	public function publicIndexAction()
+	{
+		// Same as indexAction but with isAdmin = false
+		$currentMonth = (int)date('n');
+		$currentYear = (int)date('Y');
+		
+		$nextMonth = $currentMonth + 1;
+		$nextYear = $currentYear;
+		if ($nextMonth > 12) {
+			$nextMonth = 1;
+			$nextYear++;
+		}
+		
+		// Find current month
+		$currentMymonthResult = $this->mymonthRepository->findByMonthAndYear($currentMonth, $currentYear);
+		$currentMymonth = null;
+		if ($currentMymonthResult->count() > 0) {
+			$currentMymonth = $currentMymonthResult->getFirst();
+		}
+		
+		// Find next month
+		$nextMymonthResult = $this->mymonthRepository->findByMonthAndYear($nextMonth, $nextYear);
+		$nextMymonth = null;
+		if ($nextMymonthResult->count() > 0) {
+			$nextMymonth = $nextMymonthResult->getFirst();
+		}
+		
+		// Get days for current month
+		$currentDays = [];
+		if ($currentMymonth) {
+			$currentDays = $this->mydayRepository->findByMymonth($currentMymonth->getUid());
+		}
+		
+		// Get days for next month
+		$nextDays = [];
+		if ($nextMymonth) {
+			$nextDays = $this->mydayRepository->findByMymonth($nextMymonth->getUid());
+		}
+		
+		$this->view->assignMultiple([
+			'currentMonth' => $currentMonth,
+			'currentYear' => $currentYear,
+			'currentMymonth' => $currentMymonth,
+			'currentDays' => $currentDays,
+			'nextMonth' => $nextMonth,
+			'nextYear' => $nextYear,
+			'nextMymonth' => $nextMymonth,
+			'nextDays' => $nextDays,
+			'isAdmin' => false,  // ВИНАГИ false за публичен plugin
+			'isPublicView' => true  // Флаг че е публичен изглед
+		]);
+	}
+	
+	/**
 	 * Check if current user is logged in frontend user
 	 *
 	 * @return bool
