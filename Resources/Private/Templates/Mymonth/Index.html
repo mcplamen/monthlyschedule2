@@ -286,64 +286,141 @@ function openEventModal(mydayUid) {
         });
 }
 
-// Save button handler
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('saveBtn').addEventListener('click', function() {
-        var form = document.getElementById('eventForm');
-        var uid = form.getAttribute('data-uid');
-        
-		// Get form data
-		var formData = {
-			person: personInput.value,
-			email: emailInput.value,
-			topic: topicInput.value,
-			confirm: form.querySelector('[name="confirm"]') ? form.querySelector('[name="confirm"]').checked : false
-		};
-        
-        // Build POST data
-        var postData = new URLSearchParams();
-        postData.append('tx_monthlyschedule_monthlyschedule[action]', 'ajaxUpdate');
-        postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
-        postData.append('tx_monthlyschedule_monthlyschedule[myday]', uid);
-        postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
-        postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
-        postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
-        
-        // AJAX save
-        fetch(window.location.pathname, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: postData
-        })
-        .then(response => response.json())
-        .then(data => {
-		if(data.success) {
-			// Show success message
-			var modalBody = document.getElementById('modalBody');
-			modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade show" role="alert">Saved successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+	// Helper function to close modal
+	function closeModal() {
+		var modalEl = document.getElementById('eventModal');
+		var $modal = window.jQuery ? jQuery(modalEl) : null;
+		
+		if ($modal) {
+			$modal.modal('hide');
+		} else {
+			modalEl.classList.remove('show');
+			modalEl.style.display = 'none';
+			document.body.classList.remove('modal-open');
 			
-			// Re-enable save button
-			saveBtn.disabled = false;
-			saveBtn.textContent = 'Save';
-			
-			// User closes modal manually, then we reload
-			var modalEl = document.getElementById('eventModal');
-			if (window.jQuery) {
-				jQuery(modalEl).one('hidden.bs.modal', function() {
-					location.reload();
-				});
+			var backdrop = document.getElementById('modalBackdrop');
+			if (backdrop) {
+				backdrop.remove();
 			}
+		}
+	}
 
-            } else {
-                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
-            }
-        })
-        .catch(error => {
-            document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
-        });
+// All event handlers when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Event delegation - handle clicks on event links
+    document.addEventListener('click', function(e) {
+        var target = e.target.closest('.event-link');
+        if (target && target.hasAttribute('data-myday-uid')) {
+            e.preventDefault();
+            var mydayUid = target.getAttribute('data-myday-uid');
+            openEventModal(mydayUid);
+        }
     });
+    
+    // Save button handler (само за админи)
+    var saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+            var form = document.getElementById('eventForm');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+            
+            var uid = form.getAttribute('data-uid');
+            
+            // Get form data
+            var personInput = form.querySelector('[name="person"]');
+            var emailInput = form.querySelector('[name="email"]');
+            var topicInput = form.querySelector('[name="topic"]');
+            
+            if (!personInput || !emailInput || !topicInput) {
+                console.error('Form inputs not found');
+                return;
+            }
+            
+            // Get form data
+            var formData = {
+                person: personInput.value,
+                email: emailInput.value,
+                topic: topicInput.value,
+                confirm: form.querySelector('[name="confirm"]') ? form.querySelector('[name="confirm"]').checked : false
+            };
+            
+            console.log('Saving data:', formData);
+            
+            // Disable save button during save
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+            
+            // Build POST data
+            var postData = new URLSearchParams();
+            postData.append('tx_monthlyschedule_monthlyschedule[action]', 'ajaxUpdate');
+            postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
+            postData.append('tx_monthlyschedule_monthlyschedule[myday]', uid);
+            postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
+            postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
+            postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
+            postData.append('tx_monthlyschedule_monthlyschedule[data][confirm]', formData.confirm ? '1' : '0');
+            
+            // AJAX save
+            fetch(window.location.pathname, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: postData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                
+                // Remove any existing alerts
+                var existingAlerts = document.querySelectorAll('#modalBody .alert');
+                existingAlerts.forEach(function(alert) {
+                    alert.remove();
+                });
+                
+                if(data.success) {
+                    // Show success message
+                    var modalBody = document.getElementById('modalBody');
+                    modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade show" role="alert">Saved successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                    
+                    // Re-enable save button
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                    
+                    // User closes modal manually, then we reload
+                    var modalEl = document.getElementById('eventModal');
+                    if (window.jQuery) {
+                        jQuery(modalEl).one('hidden.bs.modal', function() {
+                            location.reload();
+                        });
+                    }
+                } else {
+                    document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error: ' + (data.message || 'Unknown error') + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                    
+                    // Re-enable save button
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                }
+            })
+            .catch(error => {
+                console.error('Save error:', error);
+                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error saving changes: ' + error + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                
+                // Re-enable save button
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            });
+        });
+    }
+    
+    // ПРЕМАХНИ bookingForm handler-а от тук!
 });
 </script>
 	
