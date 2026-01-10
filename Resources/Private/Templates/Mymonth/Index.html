@@ -214,7 +214,6 @@
 </div>
 
 <script>
-// Open modal function (Pure JavaScript - No jQuery)
 // Open modal function (Bootstrap 4 compatible)
 function openEventModal(mydayUid) {
     console.log('Opening modal for UID:', mydayUid);
@@ -222,18 +221,7 @@ function openEventModal(mydayUid) {
     // Get modal element
     var modalEl = document.getElementById('eventModal');
     var modalBody = document.getElementById('modalBody');
-    var saveBtn = document.getElementById('saveBtn'); // Може да е null ако не е логнат
-	if (saveBtn) {
-    saveBtn.addEventListener('click', function() {
-        var form = document.getElementById('eventForm');
-        if (!form) {
-            console.error('Form not found');
-            return;
-        }
-        
-        // ... rest of the code stays the same
-    });
-	}
+    var saveBtn = document.getElementById('saveBtn');
     
     // Show modal (Bootstrap 4 way - using jQuery that Bootstrap 4 requires)
     var $modal = window.jQuery ? jQuery(modalEl) : null;
@@ -286,24 +274,26 @@ function openEventModal(mydayUid) {
         });
 }
 
-	// Helper function to close modal
-	function closeModal() {
-		var modalEl = document.getElementById('eventModal');
-		var $modal = window.jQuery ? jQuery(modalEl) : null;
-		
-		if ($modal) {
-			$modal.modal('hide');
-		} else {
-			modalEl.classList.remove('show');
-			modalEl.style.display = 'none';
-			document.body.classList.remove('modal-open');
-			
-			var backdrop = document.getElementById('modalBackdrop');
-			if (backdrop) {
-				backdrop.remove();
-			}
-		}
-	}
+// Helper function to close modal (Bootstrap 4)
+function closeModal() {
+    var modalEl = document.getElementById('eventModal');
+    var $modal = window.jQuery ? jQuery(modalEl) : null;
+    
+    if ($modal) {
+        $modal.modal('hide');
+    } else {
+        // Manual close
+        modalEl.classList.remove('show');
+        modalEl.style.display = 'none';
+        document.body.classList.remove('modal-open');
+        
+        // Remove backdrop
+        var backdrop = document.getElementById('modalBackdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+    }
+}
 
 // All event handlers when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -318,10 +308,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Save button handler (само за админи)
+    // Save button handler
     var saveBtn = document.getElementById('saveBtn');
     if (saveBtn) {
         saveBtn.addEventListener('click', function() {
+            console.log('Save button clicked');
+            
             var form = document.getElementById('eventForm');
             if (!form) {
                 console.error('Form not found');
@@ -329,8 +321,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             var uid = form.getAttribute('data-uid');
+            console.log('Form UID:', uid);
             
-            // Get form data
+            // Get form inputs
             var personInput = form.querySelector('[name="person"]');
             var emailInput = form.querySelector('[name="email"]');
             var topicInput = form.querySelector('[name="topic"]');
@@ -350,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             console.log('Saving data:', formData);
             
-            // Disable save button during save
+            // Disable save button
             saveBtn.disabled = true;
             saveBtn.textContent = 'Saving...';
             
@@ -362,7 +355,9 @@ document.addEventListener('DOMContentLoaded', function() {
             postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
             postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
             postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][confirm]', formData.confirm ? '1' : '0');
+            postData.append('tx_monthlyschedule_monthlyschedule[data][confirm]', formData.confirm);
+            
+            console.log('POST data:', postData.toString());
             
             // AJAX save
             fetch(window.location.pathname, {
@@ -374,47 +369,44 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => {
                 console.log('Response status:', response.status);
-                return response.json();
+                return response.text();
             })
-            .then(data => {
-                console.log('Response data:', data);
+            .then(text => {
+                console.log('Raw response:', text);
                 
-                // Remove any existing alerts
-                var existingAlerts = document.querySelectorAll('#modalBody .alert');
-                existingAlerts.forEach(function(alert) {
-                    alert.remove();
-                });
-                
-			if(data.success) {
-				// Show success message briefly
-				var modalBody = document.getElementById('modalBody');
-				modalBody.innerHTML = '<div class="alert alert-success text-center"><h4>Saved successfully!</h4><p>Reloading...</p></div>';
-				
-				// Reload immediately
-				setTimeout(function() {
-					location.reload();
-				}, 1000);
-
-                } else {
-                    document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error: ' + (data.message || 'Unknown error') + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+                try {
+                    var data = JSON.parse(text);
+                    console.log('Parsed data:', data);
                     
-                    // Re-enable save button
+                    if(data.success) {
+                        var modalBody = document.getElementById('modalBody');
+                        modalBody.innerHTML = '<div class="alert alert-success text-center"><h4>Saved successfully!</h4><p>Reloading...</p></div>';
+                        
+                        setTimeout(function() {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        console.error('Save failed:', data.message);
+                        document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error: ' + (data.message || 'Unknown error') + '</div>');
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save';
+                    }
+                } catch(e) {
+                    console.error('JSON parse error:', e);
+                    console.log('Response text:', text);
+                    document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Server error: Invalid response</div>');
                     saveBtn.disabled = false;
                     saveBtn.textContent = 'Save';
                 }
             })
             .catch(error => {
-                console.error('Save error:', error);
-                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger alert-dismissible fade show" role="alert">Error saving changes: ' + error + '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-                
-                // Re-enable save button
+                console.error('Fetch error:', error);
+                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error: ' + error + '</div>');
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save';
             });
         });
     }
-    
-    // ПРЕМАХНИ bookingForm handler-а от тук!
 });
 </script>
 	

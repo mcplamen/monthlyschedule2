@@ -250,42 +250,68 @@ $this->logger->debug('newAction called', [
 	 */
 	public function ajaxUpdateAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $myday)
 	{
+		// DEBUG - Log that action was called
+		error_log('===== ajaxUpdateAction called =====');
+		error_log('Myday UID: ' . $myday->getUid());
+		
+		// Get POST data from tx_monthlyschedule_monthlyschedule[data]
 		$requestArguments = $this->request->getArguments();
+		
+		error_log('Request arguments: ' . print_r($requestArguments, true));
 		
 		if (isset($requestArguments['data'])) {
 			$data = $requestArguments['data'];
 			
+			error_log('Data received: ' . print_r($data, true));
+			
 			// Update fields
 			if (isset($data['person'])) {
 				$myday->setPerson($data['person']);
+				error_log('Set person: ' . $data['person']);
 			}
 			
 			if (isset($data['email'])) {
 				$myday->setEmail($data['email']);
+				error_log('Set email: ' . $data['email']);
 			}
 			
 			if (isset($data['topic'])) {
 				$myday->setTopic($data['topic']);
+				error_log('Set topic: ' . $data['topic']);
 			}
 			
 			// Update confirm (only for admins)
 			if (isset($data['confirm'])) {
 				$myday->setConfirm((bool)$data['confirm']);
+				error_log('Set confirm: ' . ($data['confirm'] ? 'true' : 'false'));
 			}
 			
 			// Save
-			$this->mydayRepository->update($myday);
-			
-			$persistenceManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-				\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager::class
-			);
-			$persistenceManager->persistAll();
-			
-			header('Content-Type: application/json');
-			echo json_encode(['success' => true, 'message' => 'Updated successfully']);
-			exit;
+			try {
+				$this->mydayRepository->update($myday);
+				error_log('Repository update called');
+				
+				$persistenceManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+					\TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager::class
+				);
+				$persistenceManager->persistAll();
+				error_log('PersistAll called');
+				
+				// Return JSON response
+				header('Content-Type: application/json');
+				echo json_encode(['success' => true, 'message' => 'Updated successfully']);
+				error_log('Returning success response');
+				exit;
+			} catch (\Exception $e) {
+				error_log('ERROR saving: ' . $e->getMessage());
+				header('Content-Type: application/json');
+				echo json_encode(['success' => false, 'message' => 'Database error: ' . $e->getMessage()]);
+				exit;
+			}
 		}
 		
+		// Error response
+		error_log('ERROR: No data provided in request');
 		header('Content-Type: application/json');
 		echo json_encode(['success' => false, 'message' => 'No data provided']);
 		exit;
