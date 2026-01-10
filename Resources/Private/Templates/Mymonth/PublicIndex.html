@@ -170,14 +170,123 @@
         </f:if>
     </div>
     
-    <!-- Включи същия script и modal като в Index.html -->
-    <script>
-        // ... същия JavaScript код от Index.html ...
-    </script>
+	<script>
+	// Open modal function (Bootstrap 4 compatible)
+	function openEventModal(mydayUid) {
+		console.log('Opening modal for UID:', mydayUid);
+		
+		// Get modal element
+		var modalEl = document.getElementById('eventModal');
+		var modalBody = document.getElementById('modalBody');
+		var saveBtn = document.getElementById('saveBtn');
+		
+		// Show modal (Bootstrap 4 way)
+		var $modal = window.jQuery ? jQuery(modalEl) : null;
+		if ($modal) {
+			$modal.modal('show');
+		} else {
+			modalEl.classList.add('show');
+			modalEl.style.display = 'block';
+			document.body.classList.add('modal-open');
+			
+			var backdrop = document.createElement('div');
+			backdrop.className = 'modal-backdrop fade show';
+			backdrop.id = 'modalBackdrop';
+			document.body.appendChild(backdrop);
+		}
+		
+		// Hide save button only if it exists
+		if (saveBtn) {
+			saveBtn.style.display = 'none';
+		}
+		
+		// Show loading spinner
+		modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
+		
+		// Build URL
+		var url = window.location.pathname + 
+			'?tx_monthlyschedule_publicbooking[action]=ajaxShow' +
+			'&tx_monthlyschedule_publicbooking[controller]=Myday' +
+			'&tx_monthlyschedule_publicbooking[myday]=' + mydayUid;
+		
+		console.log('AJAX URL:', url);
+		
+		// Fetch data
+		fetch(url)
+			.then(response => response.text())
+			.then(html => {
+				console.log('AJAX success, content length:', html.length);
+				modalBody.innerHTML = html;
+				
+				if (saveBtn) {
+					saveBtn.style.display = 'block';
+				}
+			})
+			.catch(error => {
+				console.error('AJAX error:', error);
+				modalBody.innerHTML = '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
+			});
+	}
+
+	// Helper function to close modal
+	function closeModal() {
+		var modalEl = document.getElementById('eventModal');
+		var $modal = window.jQuery ? jQuery(modalEl) : null;
+		
+		if ($modal) {
+			$modal.modal('hide');
+		} else {
+			modalEl.classList.remove('show');
+			modalEl.style.display = 'none';
+			document.body.classList.remove('modal-open');
+			
+			var backdrop = document.getElementById('modalBackdrop');
+			if (backdrop) {
+				backdrop.remove();
+			}
+		}
+	}
+
+	// All event handlers when DOM is ready
+	document.addEventListener('DOMContentLoaded', function() {
+		
+		// Event delegation - handle clicks on event links
+		document.addEventListener('click', function(e) {
+			var target = e.target.closest('.event-link');
+			if (target && target.hasAttribute('data-myday-uid')) {
+				e.preventDefault();
+				var mydayUid = target.getAttribute('data-myday-uid');
+				openEventModal(mydayUid);
+			}
+		});
+		
+		// Note: No save button handler needed for public view
+		// The booking form in AjaxShowPublic.html handles its own submission
+	});
+	</script>
     
-    <!-- Bootstrap Modal -->
-    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
-        <!-- ... същия modal HTML от Index.html ...-->
-    </div>
+	<!-- Bootstrap Modal -->
+	<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="eventModalLabel">Book Appointment</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" id="modalBody">
+					<div class="text-center">
+						<div class="spinner-border" role="status">
+							<span class="sr-only">Loading...</span>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
     
 </f:section>

@@ -319,18 +319,23 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            if(data.success) {
-                // Show success message
-                var modalBody = document.getElementById('modalBody');
-                modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success">Speichern erfolgreich! <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button></div>');
-                
-                // Close modal after 1 second and reload
-                setTimeout(function() {
-                    var modal = document.getElementById('eventModal');
-                    var bsModal = bootstrap.Modal.getInstance(modal);
-                    bsModal.hide();
-                    location.reload();
-                }, 1000);
+		if(data.success) {
+			// Show success message
+			var modalBody = document.getElementById('modalBody');
+			modalBody.insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade show" role="alert">Saved successfully!<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
+			
+			// Re-enable save button
+			saveBtn.disabled = false;
+			saveBtn.textContent = 'Save';
+			
+			// User closes modal manually, then we reload
+			var modalEl = document.getElementById('eventModal');
+			if (window.jQuery) {
+				jQuery(modalEl).one('hidden.bs.modal', function() {
+					location.reload();
+				});
+			}
+
             } else {
                 document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error saving changes.</div>');
             }
