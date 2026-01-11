@@ -106,17 +106,21 @@ function openEventModal(mydayUid) {
     
     console.log('AJAX URL:', url);
     
-    // Fetch data
-    fetch(url)
-        .then(response => response.text())
-        .then(html => {
-            console.log('AJAX success, content length:', html.length);
-            modalBody.innerHTML = html;
-        })
-        .catch(error => {
-            console.error('AJAX error:', error);
-            modalBody.innerHTML = '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
-        });
+	// Fetch data
+	fetch(url)
+		.then(response => response.text())
+		.then(html => {
+			console.log('AJAX success, content length:', html.length);
+			console.log('First 500 chars of HTML:', html.substring(0, 500));
+			console.log('Contains <html> tag?', html.indexOf('<html') !== -1);
+			console.log('Contains event-details?', html.indexOf('event-details') !== -1);
+			
+			modalBody.innerHTML = html;
+		})
+		.catch(error => {
+			console.error('AJAX error:', error);
+			modalBody.innerHTML = '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
+		});
 }
 
 // Event delegation when DOM is ready

@@ -219,20 +219,32 @@ $this->logger->debug('newAction called', [
 		
 		error_log('ajaxShowAction - myday UID: ' . $myday->getUid() . ', isAdmin: ' . ($isAdmin ? 'yes' : 'no'));
 		
-		// Assign data to view
-		$this->view->assign('myday', $myday);
-		$this->view->assign('isAdmin', $isAdmin);
-		
 		// Choose template based on user role
 		$templateName = $isAdmin ? 'AjaxShow' : 'AjaxShowPublic';
 		
 		error_log('Using template: ' . $templateName);
 		
-		// Set template
-		$this->view->setTemplate($templateName);
+		// Create standalone view without layout
+		$view = $this->objectManager->get(\TYPO3\CMS\Fluid\View\StandaloneView::class);
+		
+		// Set template paths
+		$view->setTemplateRootPaths([
+			\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName('EXT:monthlyschedule/Resources/Private/Templates/')
+		]);
+		
+		// Set specific template file
+		$view->setTemplatePathAndFilename(
+			\TYPO3\CMS\Core\Utility\GeneralUtility::getFileAbsFileName(
+				'EXT:monthlyschedule/Resources/Private/Templates/Myday/' . $templateName . '.html'
+			)
+		);
+		
+		// Assign variables
+		$view->assign('myday', $myday);
+		$view->assign('isAdmin', $isAdmin);
 		
 		// Render without layout
-		$content = $this->view->render();
+		$content = $view->render();
 		
 		error_log('Content length: ' . strlen($content));
 		
