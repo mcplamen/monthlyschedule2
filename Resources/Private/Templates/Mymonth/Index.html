@@ -216,78 +216,68 @@
 <script>
 // Open modal function (Bootstrap 4 compatible)
 function openEventModal(mydayUid) {
-    console.log('Opening modal for UID:', mydayUid);
-    
-    // Get modal element
+
     var modalEl = document.getElementById('eventModal');
     var modalBody = document.getElementById('modalBody');
     var saveBtn = document.getElementById('saveBtn');
-    
-    // Show modal (Bootstrap 4 way - using jQuery that Bootstrap 4 requires)
+
+    // Show modal (Bootstrap 4)
     var $modal = window.jQuery ? jQuery(modalEl) : null;
     if ($modal) {
         $modal.modal('show');
     } else {
-        // Fallback if jQuery not available
         modalEl.classList.add('show');
         modalEl.style.display = 'block';
         document.body.classList.add('modal-open');
-        
-        // Add backdrop
+
         var backdrop = document.createElement('div');
         backdrop.className = 'modal-backdrop fade show';
         backdrop.id = 'modalBackdrop';
         document.body.appendChild(backdrop);
     }
-    
-    // Hide save button only if it exists
+
     if (saveBtn) {
         saveBtn.style.display = 'none';
     }
-    
-    // Show loading spinner
-    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
-    
-    // Build URL
-    var url = window.location.pathname + 
+
+    modalBody.innerHTML =
+        '<div class="text-center">' +
+            '<div class="spinner-border" role="status">' +
+                '<span class="sr-only">Loading...</span>' +
+            '</div>' +
+        '</div>';
+
+    var url = window.location.pathname +
         '?tx_monthlyschedule_monthlyschedule[action]=ajaxShow' +
         '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
         '&tx_monthlyschedule_monthlyschedule[myday]=' + mydayUid;
-    
-    console.log('AJAX URL:', url);
-    
-    // Fetch data
+
     fetch(url)
         .then(response => response.text())
         .then(html => {
-            console.log('AJAX success, content length:', html.length);
             modalBody.innerHTML = html;
-            
-            // Show save button only if it exists
             if (saveBtn) {
                 saveBtn.style.display = 'block';
             }
         })
-        .catch(error => {
-            console.error('AJAX error:', error);
-            modalBody.innerHTML = '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
+        .catch(() => {
+            modalBody.innerHTML =
+                '<div class="alert alert-danger">Error loading event details</div>';
         });
 }
 
-// Helper function to close modal (Bootstrap 4)
+// Helper function to close modal
 function closeModal() {
     var modalEl = document.getElementById('eventModal');
     var $modal = window.jQuery ? jQuery(modalEl) : null;
-    
+
     if ($modal) {
         $modal.modal('hide');
     } else {
-        // Manual close
         modalEl.classList.remove('show');
         modalEl.style.display = 'none';
         document.body.classList.remove('modal-open');
-        
-        // Remove backdrop
+
         var backdrop = document.getElementById('modalBackdrop');
         if (backdrop) {
             backdrop.remove();
@@ -295,120 +285,92 @@ function closeModal() {
     }
 }
 
-// All event handlers when DOM is ready
+// DOM ready
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Event delegation - handle clicks on event links
+
+    // Open modal from calendar/event link
     document.addEventListener('click', function(e) {
         var target = e.target.closest('.event-link');
-        if (target && target.hasAttribute('data-myday-uid')) {
+        if (target && target.dataset.mydayUid) {
             e.preventDefault();
-            var mydayUid = target.getAttribute('data-myday-uid');
-            openEventModal(mydayUid);
+            openEventModal(target.dataset.mydayUid);
         }
     });
-    
-    // Save button handler
-    var saveBtn = document.getElementById('saveBtn');
-    if (saveBtn) {
-        saveBtn.addEventListener('click', function() {
-            console.log('Save button clicked');
-            
+
+    // Save button (event delegation)
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'saveBtn') {
+
             var form = document.getElementById('eventForm');
             if (!form) {
-                console.error('Form not found');
                 return;
             }
-            
-            var uid = form.getAttribute('data-uid');
-            console.log('Form UID:', uid);
-            
-            // Get form inputs
+
+            var uid = form.dataset.uid;
+
             var personInput = form.querySelector('[name="person"]');
-            var emailInput = form.querySelector('[name="email"]');
-            var topicInput = form.querySelector('[name="topic"]');
-            
+            var emailInput  = form.querySelector('[name="email"]');
+            var topicInput  = form.querySelector('[name="topic"]');
+
             if (!personInput || !emailInput || !topicInput) {
-                console.error('Form inputs not found');
                 return;
             }
-            
-            // Get form data
-            var formData = {
-                person: personInput.value,
-                email: emailInput.value,
-                topic: topicInput.value,
-                confirm: form.querySelector('[name="confirm"]') ? form.querySelector('[name="confirm"]').checked : false
-            };
-            
-            console.log('Saving data:', formData);
-            
-            // Disable save button
-            saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
-            
-            // Build POST data
+
+            e.target.disabled = true;
+            e.target.textContent = 'Saving...';
+
             var postData = new URLSearchParams();
             postData.append('tx_monthlyschedule_monthlyschedule[action]', 'ajaxUpdate');
             postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
             postData.append('tx_monthlyschedule_monthlyschedule[myday]', uid);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][confirm]', formData.confirm);
-            
-            console.log('POST data:', postData.toString());
-            
-            // AJAX save
-            fetch(window.location.pathname, {
+            postData.append('tx_monthlyschedule_monthlyschedule[data][person]', personInput.value);
+            postData.append('tx_monthlyschedule_monthlyschedule[data][email]', emailInput.value);
+            postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', topicInput.value);
+            postData.append(
+                'tx_monthlyschedule_monthlyschedule[data][confirm]',
+                form.querySelector('[name="confirm"]')?.checked ? 1 : 0
+            );
+
+            var saveUrl = window.location.pathname +
+                '?tx_monthlyschedule_monthlyschedule[action]=ajaxUpdate' +
+                '&tx_monthlyschedule_monthlyschedule[controller]=Myday';
+
+            fetch(saveUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: postData
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.text();
-            })
+            .then(response => response.text())
             .then(text => {
-                console.log('Raw response:', text);
-                
-                try {
-                    var data = JSON.parse(text);
-                    console.log('Parsed data:', data);
-                    
-                    if(data.success) {
-                        var modalBody = document.getElementById('modalBody');
-                        modalBody.innerHTML = '<div class="alert alert-success text-center"><h4>Saved successfully!</h4><p>Reloading...</p></div>';
-                        
-                        setTimeout(function() {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        console.error('Save failed:', data.message);
-                        document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error: ' + (data.message || 'Unknown error') + '</div>');
-                        saveBtn.disabled = false;
-                        saveBtn.textContent = 'Save';
-                    }
-                } catch(e) {
-                    console.error('JSON parse error:', e);
-                    console.log('Response text:', text);
-                    document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Server error: Invalid response</div>');
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
+                var data = JSON.parse(text);
+
+                if (data.success) {
+                    document.getElementById('modalBody').innerHTML =
+                        '<div class="alert alert-success text-center">' +
+                            '<h4>Saved successfully!</h4>' +
+                        '</div>';
+
+                    setTimeout(function() {
+						closeModal();
+					}, 500);
+                } else {
+                    throw new Error(data.message || 'Save failed');
                 }
             })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                document.getElementById('modalBody').insertAdjacentHTML('afterbegin', '<div class="alert alert-danger">Error: ' + error + '</div>');
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save';
+            .catch(() => {
+                document.getElementById('modalBody')
+                    .insertAdjacentHTML(
+                        'afterbegin',
+                        '<div class="alert alert-danger">Save failed</div>'
+                    );
+                e.target.disabled = false;
+                e.target.textContent = 'Save';
             });
-        });
-    }
+        }
+    });
 });
 </script>
+
 	
 </f:section>
 </html>

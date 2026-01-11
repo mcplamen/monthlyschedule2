@@ -37,54 +37,50 @@
 </div>
 
 <script>
-// Handle booking form submission
-document.getElementById('bookingForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    var form = this;
-    var mydayUid = form.getAttribute('data-myday-uid');
-    
-    var formData = {
-        person: form.querySelector('[name="person"]').value,
-        email: form.querySelector('[name="email"]').value,
-        topic: form.querySelector('[name="topic"]').value
-    };
-    
-    // Build POST data
-    var postData = new URLSearchParams();
-    postData.append('tx_monthlyschedule_monthlyschedule[action]', 'publicBook');
-    postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
-    postData.append('tx_monthlyschedule_monthlyschedule[myday]', mydayUid);
-    postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
-    postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
-    postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
-    
-    // AJAX save
-    fetch(window.location.pathname, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: postData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if(data.success) {
-            form.innerHTML = '<div class="alert alert-success">Booking successful! We will contact you soon.</div>';
-            
-            setTimeout(function() {
-                var modalEl = document.getElementById('eventModal');
-                if (window.jQuery) {
-                    jQuery(modalEl).modal('hide');
-                }
-                location.reload();
-            }, 2000);
-        } else {
-            alert('Error: ' + (data.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        alert('Error booking: ' + error);
+var bookingForm = document.getElementById('bookingForm');
+
+if (bookingForm) {
+    bookingForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var mydayUid = this.dataset.mydayUid;
+        var submitBtn = this.querySelector('button[type="submit"]');
+
+        var postData = new URLSearchParams();
+        postData.append('tx_monthlyschedule_publicbooking[action]', 'publicBook');
+        postData.append('tx_monthlyschedule_publicbooking[controller]', 'Myday');
+        postData.append('tx_monthlyschedule_publicbooking[myday]', mydayUid);
+        postData.append('tx_monthlyschedule_publicbooking[data][person]', this.person.value);
+        postData.append('tx_monthlyschedule_publicbooking[data][email]', this.email.value);
+        postData.append('tx_monthlyschedule_publicbooking[data][topic]', this.topic.value);
+
+        submitBtn.disabled = true;
+
+        fetch(window.location.pathname, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: postData.toString()
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector('.event-details').innerHTML =
+                    '<div class="alert alert-success text-center">' +
+                    '<h4>✓ Booking successful</h4>' +
+                    '<p>We will contact you soon.</p></div>';
+
+                setTimeout(() => {
+                    jQuery('#eventModal').modal('hide');
+                }, 1200);
+            } else {
+                alert(data.message || 'Error');
+                submitBtn.disabled = false;
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            submitBtn.disabled = false;
+        });
     });
-});
+}
 </script>
