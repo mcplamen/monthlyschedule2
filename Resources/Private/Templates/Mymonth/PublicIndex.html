@@ -101,7 +101,8 @@ function openEventModal(mydayUid) {
     // Build URL
     var url = window.location.pathname + 
         '?tx_monthlyschedule_publicbooking[action]=ajaxShow' +
-        '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
+//        '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
+		'&tx_monthlyschedule_monthlyschedule[controller]=Mcplamen\\Monthlyschedule\\Controller\\MydayController' +
         '&tx_monthlyschedule_monthlyschedule[myday]=' + mydayUid;
     
     console.log('AJAX URL:', url);

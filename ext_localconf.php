@@ -29,6 +29,10 @@ defined('TYPO3') || die();
     ]
 );
 
+
+
+
+
 // PageTS Config
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig(
     'mod {
