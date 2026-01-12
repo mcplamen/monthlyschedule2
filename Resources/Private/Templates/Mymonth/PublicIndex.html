@@ -100,7 +100,7 @@ function openEventModal(mydayUid) {
     
     // Build URL
     var url = window.location.pathname + 
-        '?tx_monthlyschedule_monthlyschedule[action]=ajaxShow' +
+        '?tx_monthlyschedule_publicbooking[action]=ajaxShow' +
         '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
         '&tx_monthlyschedule_monthlyschedule[myday]=' + mydayUid;
     
@@ -161,9 +161,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Build POST data
             var postData = new URLSearchParams();
-            postData.append('tx_monthlyschedule_monthlyschedule[action]', 'publicBook');
-            postData.append('tx_monthlyschedule_monthlyschedule[controller]', 'Myday');
-            postData.append('tx_monthlyschedule_monthlyschedule[myday]', mydayUid);
+			postData.append('tx_monthlyschedule_publicbooking[action]', 'publicBook');  // ПРОМЕНЕНО
+			postData.append('tx_monthlyschedule_publicbooking[controller]', 'Myday');   // ПРОМЕНЕНО
+			postData.append('tx_monthlyschedule_publicbooking[myday]', mydayUid); 
             postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
             postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
             postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
