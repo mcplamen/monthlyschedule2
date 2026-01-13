@@ -20,16 +20,14 @@ defined('TYPO3') || die();
     'Monthlyschedule',
     'PublicBooking',
     [
-        \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'publicIndex, ajaxShow, ajaxShowAction',
-        \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'ajaxShow, publicBook'
+        \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'publicIndex, ajaxShow, ajaxShowUpdate',
+        \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'ajaxShow, ajaxShowUpdate, publicBook'
     ],
     [
-        \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'publicIndex, ajaxShow, ajaxShowAction',
-        \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'ajaxShow, publicBook'
+        \Mcplamen\Monthlyschedule\Controller\MymonthController::class => 'publicIndex, ajaxShow, ajaxShowUpdate',
+        \Mcplamen\Monthlyschedule\Controller\MydayController::class => 'ajaxShow, ajaxShowUpdate, publicBook'
     ]
 );
-
-
 
 
 
