@@ -38,9 +38,20 @@
                                         <f:if condition="{cell.hasData}">
                                             <div class="events-list">
                                                 <f:for each="{cell.dayEvents}" as="event">
-                                                    <a href="#"
-                                                       class="event-link {f:if(condition: event.person, then: 'booked', else: 'available')}"
-                                                       data-myday-uid="{event.uid}">
+
+                                    <!-- CORRECT LINK -->
+                                    <a href="{f:uri.action(
+                                            extensionName: 'Monthlyschedule',
+                                            pluginName: 'PublicBooking',
+                                            controller: 'Myday',
+                                            action: 'ajaxShow',
+                                            arguments: {myday: event.uid}
+                                        )}"
+                                       class="event-link {f:if(condition: event.person, then: 'booked', else: 'available')}"
+                                       data-myday-uid="{event.uid}">
+
+
+
                                                         <span class="event-time">
                                                             {event.timeslot} – {event.timeslotend}
                                                         </span>
@@ -95,13 +106,13 @@
 
 <script>
 // Open modal function (Bootstrap 4 compatible)
-function openEventModal(mydayUid) {
-    console.log('Opening modal for UID:', mydayUid);
-    
+function openEventModal(url) {
+    console.log('Opening modal with URL:', url);
+
     // Get modal element
     var modalEl = document.getElementById('eventModal');
     var modalBody = document.getElementById('modalBody');
-    
+
     // Show modal
     var $modal = window.jQuery ? jQuery(modalEl) : null;
     if ($modal) {
@@ -110,89 +121,76 @@ function openEventModal(mydayUid) {
         modalEl.classList.add('show');
         modalEl.style.display = 'block';
         document.body.classList.add('modal-open');
-        
+
         var backdrop = document.createElement('div');
         backdrop.className = 'modal-backdrop fade show';
         backdrop.id = 'modalBackdrop';
         document.body.appendChild(backdrop);
     }
-    
+
     // Show loading spinner
-    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
-    
-    // Build URL
-    var url = window.location.pathname + 
-        '?tx_monthlyschedule_publicbooking[action]=ajaxShow' +
-//        '&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
-		'&tx_monthlyschedule_monthlyschedule[controller]=Myday' +
-        '&tx_monthlyschedule_monthlyschedule[myday]=' + mydayUid;
-    
-    console.log('AJAX URL:', url);
-    
-	// Fetch data
-	fetch(url)
-		.then(response => response.text())
-		.then(html => {
-			console.log('AJAX success, content length:', html.length);
-			console.log('First 500 chars of HTML:', html.substring(0, 500));
-			console.log('Contains <html> tag?', html.indexOf('<html') !== -1);
-			console.log('Contains event-details?', html.indexOf('event-details') !== -1);
-			
-			modalBody.innerHTML = html;
-		})
-		.catch(error => {
-			console.error('AJAX error:', error);
-			modalBody.innerHTML = '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
-		});
+    modalBody.innerHTML =
+        '<div class="text-center"><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div></div>';
+
+    // Fetch data
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            console.log('AJAX success, content length:', html.length);
+            modalBody.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('AJAX error:', error);
+            modalBody.innerHTML =
+                '<div class="alert alert-danger">Error loading event details: ' + error + '</div>';
+        });
 }
 
 // Event delegation when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
-    
+
     // Handle clicks on event links
     document.addEventListener('click', function(e) {
         var target = e.target.closest('.event-link');
-        if (target && target.hasAttribute('data-myday-uid')) {
+        if (target) {
             e.preventDefault();
-            var mydayUid = target.getAttribute('data-myday-uid');
-            openEventModal(mydayUid);
+
+            var url = target.getAttribute('href');   // ← ВАЖНО: взимаме URL от href
+            openEventModal(url);                    // ← подаваме URL, не UID
         }
     });
-    
+
     // Handle booking form submission with event delegation
     document.addEventListener('submit', function(e) {
         if (e.target && e.target.id === 'bookingForm') {
             e.preventDefault();
-            
+
             console.log('Booking form submitted via delegation');
-            
+
             var form = e.target;
             var mydayUid = form.getAttribute('data-myday-uid');
             var submitBtn = form.querySelector('button[type="submit"]');
-            
+
             var formData = {
                 person: form.querySelector('[name="person"]').value,
                 email: form.querySelector('[name="email"]').value,
                 topic: form.querySelector('[name="topic"]').value
             };
-            
-            console.log('Booking data:', formData);
-            
+
             // Disable submit button
             submitBtn.disabled = true;
             submitBtn.textContent = 'Booking...';
-            
+
             // Build POST data
             var postData = new URLSearchParams();
-			postData.append('tx_monthlyschedule_publicbooking[action]', 'publicBook');  // ПРОМЕНЕНО
-			postData.append('tx_monthlyschedule_publicbooking[controller]', 'Myday');   // ПРОМЕНЕНО
-			postData.append('tx_monthlyschedule_publicbooking[myday]', mydayUid); 
-            postData.append('tx_monthlyschedule_monthlyschedule[data][person]', formData.person);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][email]', formData.email);
-            postData.append('tx_monthlyschedule_monthlyschedule[data][topic]', formData.topic);
-            
-            console.log('POST data:', postData.toString());
-            
+            postData.append('tx_monthlyschedule_publicbooking[action]', 'publicBook');
+            postData.append('tx_monthlyschedule_publicbooking[controller]', 'Myday');
+            postData.append('tx_monthlyschedule_publicbooking[myday]', mydayUid);
+
+            postData.append('tx_monthlyschedule_publicbooking[data][person]', formData.person);
+            postData.append('tx_monthlyschedule_publicbooking[data][email]', formData.email);
+            postData.append('tx_monthlyschedule_publicbooking[data][topic]', formData.topic);
+
             // AJAX save
             fetch(window.location.pathname, {
                 method: 'POST',
@@ -201,23 +199,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 },
                 body: postData
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.text();
-            })
+            .then(response => response.text())
             .then(text => {
-                console.log('Raw response:', text);
-                
                 try {
                     var data = JSON.parse(text);
-                    console.log('Parsed data:', data);
-                    
-                    if(data.success) {
-                        // Replace modal body with success message
+
+                    if (data.success) {
                         var modalBody = document.getElementById('modalBody');
-                        modalBody.innerHTML = '<div class="alert alert-success text-center"><h4>✓ Saved Successfully!</h4><p>Your appointment has been booked.</p><p>We will contact you soon at <strong>' + formData.email + '</strong></p></div>';
-                        
-                        // Close modal after 3 seconds and reload
+                        modalBody.innerHTML =
+                            '<div class="alert alert-success text-center"><h4>✓ Saved Successfully!</h4><p>Your appointment has been booked.</p><p>We will contact you soon at <strong>' +
+                            formData.email + '</strong></p></div>';
+
                         setTimeout(function() {
                             var modalEl = document.getElementById('eventModal');
                             if (window.jQuery) {
@@ -226,35 +218,30 @@ document.addEventListener('DOMContentLoaded', function() {
                             location.reload();
                         }, 3000);
                     } else {
-                        // Show error
                         var errorDiv = document.createElement('div');
                         errorDiv.className = 'alert alert-danger';
                         errorDiv.textContent = 'Error: ' + (data.message || 'Unknown error');
                         form.insertBefore(errorDiv, form.firstChild);
-                        
+
                         submitBtn.disabled = false;
                         submitBtn.textContent = 'Book this time slot';
                     }
-                } catch(err) {
-                    console.error('JSON parse error:', err);
-                    
+                } catch (err) {
                     var errorDiv = document.createElement('div');
                     errorDiv.className = 'alert alert-danger';
                     errorDiv.textContent = 'Server error: Invalid response';
                     form.insertBefore(errorDiv, form.firstChild);
-                    
+
                     submitBtn.disabled = false;
                     submitBtn.textContent = 'Book this time slot';
                 }
             })
             .catch(error => {
-                console.error('Fetch error:', error);
-                
                 var errorDiv = document.createElement('div');
                 errorDiv.className = 'alert alert-danger';
                 errorDiv.textContent = 'Error: ' + error;
                 form.insertBefore(errorDiv, form.firstChild);
-                
+
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Book this time slot';
             });
@@ -262,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
 
 
 
