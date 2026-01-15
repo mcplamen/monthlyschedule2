@@ -153,6 +153,46 @@
 .event-link:nth-child(n+4):hover {
     background-color: #8e44ad;
 }
+.day-cell,
+.events-list,
+.event-link {
+    min-width: 0;
+}
+
+.day-cell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    margin-top: 5px;
+    min-width: 0;
+}
+
+.event-link {
+    display: flex;
+    flex-direction: column;
+    padding: 4px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    overflow: hidden;
+    text-decoration: none;
+    color: white !important;
+}
+
+.event-time {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 
        .myday-list-wrapper {
             max-width: 1400px;
