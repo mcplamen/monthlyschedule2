@@ -7,6 +7,7 @@
         <f:then>
             <div class="alert alert-warning">
                 <strong>This time slot is already booked.</strong>
+                <p style="margin-top: 10px; margin-bottom: 0;">Please choose another time slot.</p>
             </div>
         </f:then>
         <f:else>
@@ -26,14 +27,98 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="topic">Topic/Reason:</label>
+                    <label for="topic">Topic/Reason: *</label>
                     <textarea name="topic" id="topic" class="form-control" rows="3" required></textarea>
                 </div>
                 
-                <button type="submit" class="btn btn-success btn-block">Book this time slot</button>
+                <button type="submit" class="btn btn-success btn-block" id="bookBtn">
+                    Book this time slot
+                </button>
             </form>
         </f:else>
     </f:if>
 </div>
 
-
+<script>
+(function() {
+    var form = document.getElementById('bookingForm');
+    if (!form) return;
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        var uid = form.dataset.mydayUid;
+        var personInput = document.getElementById('person');
+        var emailInput = document.getElementById('email');
+        var topicInput = document.getElementById('topic');
+        var bookBtn = document.getElementById('bookBtn');
+        
+        if (!personInput || !emailInput || !topicInput) {
+            alert('Please fill all required fields');
+            return;
+        }
+        
+        // Disable button
+        bookBtn.disabled = true;
+        bookBtn.textContent = 'Booking...';
+        
+        // Prepare POST data
+        var postData = new URLSearchParams();
+        postData.append('tx_monthlyschedule_publicbooking[action]', 'publicBook');
+        postData.append('tx_monthlyschedule_publicbooking[controller]', 'Myday');
+        postData.append('tx_monthlyschedule_publicbooking[myday]', uid);
+        postData.append('tx_monthlyschedule_publicbooking[data][person]', personInput.value);
+        postData.append('tx_monthlyschedule_publicbooking[data][email]', emailInput.value);
+        postData.append('tx_monthlyschedule_publicbooking[data][topic]', topicInput.value);
+        
+        var saveUrl = window.location.pathname;
+        
+        fetch(saveUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: postData
+        })
+        .then(function(response) {
+            return response.text();
+        })
+        .then(function(text) {
+            try {
+                var data = JSON.parse(text);
+                
+                if (data.success) {
+                    // Show success message
+                    var modalBody = document.getElementById('modalBody');
+                    if (modalBody) {
+                        modalBody.innerHTML = 
+                            '<div class="alert alert-success text-center">' +
+                                '<h4>✓ Booking successful!</h4>' +
+                                '<p>You will receive a confirmation email once the appointment is approved.</p>' +
+                            '</div>';
+                    }
+                    
+                    // Close modal and reload after 2 seconds
+                    setTimeout(function() {
+                        if (typeof closeModal === 'function') {
+                            closeModal();
+                        }
+                        location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Booking failed');
+                }
+            } catch (err) {
+                console.error('Parse error:', err);
+                alert('Booking failed: ' + err.message);
+                bookBtn.disabled = false;
+                bookBtn.textContent = 'Book this time slot';
+            }
+        })
+        .catch(function(error) {
+            console.error('Fetch error:', error);
+            alert('Booking failed: ' + error.message);
+            bookBtn.disabled = false;
+            bookBtn.textContent = 'Book this time slot';
+        });
+    });
+})();
+</script>

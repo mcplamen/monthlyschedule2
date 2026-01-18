@@ -8,7 +8,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\Traits\CompileWithRenderStatic;
 /**
  * Calendar ViewHelper
  * Generates calendar grid structure with days and renders children with calendar data
- * Supports multiple events per day
+ * Supports multiple events per day WITH STATUS (free/booked/confirmed)
  */
 class CalendarViewHelper extends AbstractViewHelper
 {
@@ -38,7 +38,7 @@ class CalendarViewHelper extends AbstractViewHelper
             $days = $days->toArray();
         }
         
-        // Създаваме масив с дните - ВАЖНО: вече groupваме по dayname
+        // Създаваме масив с дните - групваме по dayname
         $daysArray = [];
         if (is_array($days)) {
             foreach ($days as $day) {
@@ -50,17 +50,29 @@ class CalendarViewHelper extends AbstractViewHelper
                         $daysArray[$dayname] = [];
                     }
                     
+                    // ДОБАВЯМЕ СТАТУС към събитието (БЕЗ workshift - това поле не съществува!)
+                    $eventData = [
+                        'uid' => $day->getUid(),
+                        'timeslot' => $day->getTimeslot(),
+                        'timeslotend' => $day->getTimeslotend(),
+                        'person' => $day->getPerson(),
+                        'email' => $day->getEmail(),
+                        'topic' => $day->getTopic(),
+                        'confirm' => $day->getConfirm(),
+                        'status' => self::determineStatus($day) // Статус базиран на person и confirm
+                    ];
+                    
                     // Добавяме събитието към масива за този ден
-                    $daysArray[$dayname][] = $day;
+                    $daysArray[$dayname][] = $eventData;
                 }
             }
         }
         
-        // Сортираме събитията във всеки ден по starttime
+        // Сортираме събитията във всеки ден по timeslot
         foreach ($daysArray as $dayname => $events) {
             usort($daysArray[$dayname], function($a, $b) {
-                $timeA = $a->getTimeslot() ?? '';
-                $timeB = $b->getTimeslotend() ?? '';
+                $timeA = $a['timeslot'] ?? '';
+                $timeB = $b['timeslot'] ?? '';
                 return strcmp($timeA, $timeB);
             });
         }
@@ -115,7 +127,7 @@ class CalendarViewHelper extends AbstractViewHelper
             $week[] = [
                 'day' => $day,
                 'hasData' => $hasData,
-                'dayEvents' => $dayEvents,  // Масив от всички събития за този ден
+                'dayEvents' => $dayEvents,  // Масив от всички събития за този ден (вече със статус!)
                 'isToday' => $isToday,
                 'isWeekend' => $isWeekend
             ];
@@ -183,5 +195,30 @@ class CalendarViewHelper extends AbstractViewHelper
         }
         
         return $output;
+    }
+    
+    /**
+     * Determine event status based on person and confirm fields
+     * 
+     * @param object $day The day object
+     * @return string 'free', 'booked', or 'confirmed'
+     */
+    protected static function determineStatus($day): string
+    {
+        // Check if day has person (booking exists)
+        $hasPerson = method_exists($day, 'getPerson') && !empty($day->getPerson());
+        
+        if (!$hasPerson) {
+            return 'free'; // No booking - GREEN
+        }
+        
+        // Check if booking is confirmed
+        $isConfirmed = method_exists($day, 'getConfirm') && $day->getConfirm();
+        
+        if ($isConfirmed) {
+            return 'confirmed'; // Confirmed booking - RED
+        }
+        
+        return 'booked'; // Booked but not confirmed - ORANGE
     }
 }
