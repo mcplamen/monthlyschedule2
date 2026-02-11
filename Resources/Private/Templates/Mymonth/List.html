@@ -1,65 +1,27 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+
 <f:layout name="Default" />
 
-This template is responsible for creating a table of domain objects.
-
-If you modify this template, do not forget to change the overwrite settings
-in /Configuration/ExtensionBuilder/settings.yaml:
-  Resources:
-    Private:
-      Templates:
-        Mymonth:
-          List.html: keep
-
-Otherwise your changes will be overwritten the next time you save the extension in the extension builder
-
 <f:section name="content">
-    <h1>Listing for Mymonth</h1>
-
-    <f:flashMessages />
-
-    <table class="tx_monthlyschedule">
-        <tr>
-            <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.month" /></th>
-            <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.year" /></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <f:for each="{mymonths}" as="mymonth">
-            <tr>
-                <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.month}</f:link.action></td>
-                <td><f:link.action action="show" arguments="{mymonth : mymonth}">{mymonth.year}</f:link.action></td>
-                <td><f:link.action action="edit" arguments="{mymonth : mymonth}">Edit</f:link.action></td>
-                <td><f:link.action action="delete" arguments="{mymonth : mymonth}">Delete</f:link.action></td>
-				<td><f:link.action 
-    action="new" 
-    controller="Myday" 
-    extensionName="Monthlyschedule" 
-    pluginName="Monthlyschedule"
-    arguments="{mymonth: mymonth.uid}">
-    New days for the month
-</f:link.action>
-<f:link.action 
-    action="new" 
-    controller="Myday" 
-    arguments="{mymonth: month.uid}">
-    New days for the month
-</f:link.action>
-
-</td>
-				
-
-            </tr>
-        </f:for>
-    </table>
-
-    <f:link.action action="new">New Mymonth</f:link.action>
 	
 	   <h1>Admin panel page</h1>
 
-    <f:flashMessages />
+
+    <f:if condition="{isAdmin}">
+        <f:else>
+            <div style="background: #ffcc00; color: #000; padding: 15px; border: 3px solid #cc9900; border-radius: 6px; font-size: 18px; font-weight: bold; margin-bottom: 25px; text-align: center; box-shadow: 0 0 12px rgba(0,0,0,0.25);">
+                ⚠️ Achtung! Sie sind nicht eingeloggt, um die Funktionen des Programms zu nutzen.
+            </div>
+        </f:else>
+    </f:if>
+
+
+
+
+
 	<div class="row">
 	<div class="col-lg-6 col-md-12 col-12">
+	<div class="monthclass"><f:link.action action="new">New Mymonth</f:link.action> </div>
 	    <table class="tx_monthlyschedule">
         <tr>
             <th><f:translate key="tx_monthlyschedule_domain_model_mymonth.month" /></th>
@@ -76,7 +38,7 @@ Otherwise your changes will be overwritten the next time you save the extension 
             </tr>
         </f:for>
     </table>
-	<f:link.action action="new">New Mymonth</f:link.action>
+	
 	</div>
 	<div class="col-lg-6 col-md-12 col-12">
 		    <table class="tx_monthlyschedule">

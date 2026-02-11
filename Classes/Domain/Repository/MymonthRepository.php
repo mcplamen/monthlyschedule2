@@ -26,7 +26,12 @@ class MymonthRepository extends Repository
     /**
      * @var array
      */
-    protected $defaultOrderings = ['sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_ASCENDING];
+//    protected $defaultOrderings = ['sorting' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING];
+
+	protected $defaultOrderings = [
+		'uid' => \TYPO3\CMS\Extbase\Persistence\QueryInterface::ORDER_DESCENDING
+	];
+
 	
 	/**
 	 * Find mymonth by month and year

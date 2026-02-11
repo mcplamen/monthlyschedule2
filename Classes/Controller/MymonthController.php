@@ -127,6 +127,7 @@ class MymonthController extends ActionController
     {
         $mymonths = $this->mymonthRepository->findAll();
         $this->view->assign('mymonths', $mymonths);
+		$this->assignIsAdminToView();
         return $this->htmlResponse();
     }
 
@@ -149,6 +150,7 @@ class MymonthController extends ActionController
      */
     public function newAction(): \Psr\Http\Message\ResponseInterface
     {
+		$this->assignIsAdminToView();
         return $this->htmlResponse();
     }
 
@@ -244,7 +246,7 @@ class MymonthController extends ActionController
 		if ($nextMymonth) {
 			$nextDays = $this->mydayRepository->findByMymonth($nextMymonth->getUid());
 		}
-		
+		$this->assignIsAdminToView();
 		$this->view->assignMultiple([
 			'currentMonth' => $currentMonth,
 			'currentYear' => $currentYear,
@@ -272,5 +274,15 @@ class MymonthController extends ActionController
 		return false;
 	}
 	
+	/**
+	 * Helper method to assign isAdmin to view
+	 */
+	protected function assignIsAdminToView()
+	{
+		if ($this->view) {
+			$isAdmin = $this->isLoggedInFrontendUser();
+			$this->view->assign('isAdmin', $isAdmin);
+		}
+	}
 
 }

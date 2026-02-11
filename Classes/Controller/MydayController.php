@@ -36,6 +36,7 @@ class MydayController extends ActionController
         $this->mymonthRepository = $mymonthRepository;
     }
 	
+	
 	public function initializeCreateAction(): void
 	{
 		$this->arguments
@@ -53,13 +54,7 @@ class MydayController extends ActionController
         );
 	}
 
-	
-	private LoggerInterface $logger;
 
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
 
     /**
      * action list
@@ -70,6 +65,7 @@ class MydayController extends ActionController
     {
         $mydays = $this->mydayRepository->findAll();
         $this->view->assign('mydays', $mydays);
+		$this->assignIsAdminToView();
     }
 
     /**
@@ -83,73 +79,73 @@ class MydayController extends ActionController
         $this->view->assign('myday', $myday);
     }
 
-/**
- * action new
- *
- * @param int $mymonth
- * @param int $monthNumber
- * @param int $year
- * @return void
- * @return void
- */
-public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
-{
+	/**
+	 * action new
+	 *
+	 * @param int $mymonth
+	 * @param int $monthNumber
+	 * @param int $year
+	 * @return void
+	 * @return void
+	 */
+	public function newAction($mymonth = 0, $monthNumber = 0, $year = 0)
+	{
 
-$this->logger->debug('newAction called', [
-            'mymonth' => $mymonth,
-            'monthNumber' => $monthNumber,
-            'year' => $year
-        ]);
- //   $mymonthObject = null;
-//    $mydays = [];
-    
-// ✅ ЗАДЪЛЖИТЕЛНО – създаваме обекта
-    $newMyday = new Myday();
+	$this->logger->debug('newAction called', [
+				'mymonth' => $mymonth,
+				'monthNumber' => $monthNumber,
+				'year' => $year
+			]);
+	 //   $mymonthObject = null;
+	//    $mydays = [];
+		
+	// ✅ ЗАДЪЛЖИТЕЛНО – създаваме обекта
+		$newMyday = new Myday();
 
-    // DEBUG – потвърждение
-    echo 'newMyday created: ';
-    var_dump($newMyday !== null);
-    echo '<br>';
-    
-    if ($mymonth > 0) {
-        // Зареждаме mymonth обекта
-        $mymonthObject = $this->mymonthRepository->findByUid($mymonth);
-        
-                echo 'mymonthObject found: ';
-        var_dump($mymonthObject !== null);
-        echo '<br>';
-        
-        if ($mymonthObject !== null) {
-            // Използваме repository метода
-            $mydays = $this->mydayRepository->findByMymonth($mymonth);
-            
-            echo "Days found: " . $mydays->count() . "<br>";
+		// DEBUG – потвърждение
+		echo 'newMyday created: ';
+		var_dump($newMyday !== null);
+		echo '<br>';
+		
+		if ($mymonth > 0) {
+			// Зареждаме mymonth обекта
+			$mymonthObject = $this->mymonthRepository->findByUid($mymonth);
+			
+					echo 'mymonthObject found: ';
+			var_dump($mymonthObject !== null);
+			echo '<br>';
 			
 			if ($mymonthObject !== null) {
-            $newMyday->setMymonth($mymonthObject); // 🔥 КЛЮЧОВО
-			}
+				// Използваме repository метода
+				$mydays = $this->mydayRepository->findByMymonth($mymonth);
+				
+				echo "Days found: " . $mydays->count() . "<br>";
+				
+				if ($mymonthObject !== null) {
+				$newMyday->setMymonth($mymonthObject); // 🔥 КЛЮЧОВО
+				}
 
-            
-            // Ако не са подадени month и year, вземи от обекта
-            if ($monthNumber == 0) {
-                $monthNumber = $mymonthObject->getMonth();
-                echo "Got monthNumber from object: " . $monthNumber . "<br>";
-            }
-            if ($year == 0) {
-                $year = $mymonthObject->getYear();
-                echo "Got year from object: " . $year . "<br>";
-            }
-        }
-    }
-    
-    $this->view->assignMultiple([
-        'mymonth' => $mymonth,
-        'mymonthObject' => $mymonthObject,
-        'mydays' => $mydays,
-        'monthNumber' => $monthNumber,
-        'year' => $year
-    ]);
-}
+				
+				// Ако не са подадени month и year, вземи от обекта
+				if ($monthNumber == 0) {
+					$monthNumber = $mymonthObject->getMonth();
+					echo "Got monthNumber from object: " . $monthNumber . "<br>";
+				}
+				if ($year == 0) {
+					$year = $mymonthObject->getYear();
+					echo "Got year from object: " . $year . "<br>";
+				}
+			}
+		}
+		
+		$this->view->assignMultiple([
+			'mymonth' => $mymonth,
+			'mymonthObject' => $mymonthObject,
+			'mydays' => $mydays,
+			'monthNumber' => $monthNumber,
+			'year' => $year
+		]);
+	}
 
     /**
      * action create
@@ -158,15 +154,15 @@ $this->logger->debug('newAction called', [
      * @return void
      */
     public function createAction(\Mcplamen\Monthlyschedule\Domain\Model\Myday $newMyday)
-    {
-//    echo '<pre>';
-//    echo 'CREATE ACTION HIT' . PHP_EOL;
-//    var_dump($_POST);
-//    exit;
-        $this->addFlashMessage('The object was created.');
-        $this->mydayRepository->add($newMyday);
-        $this->redirect('list');
-    }
+		{
+	//    echo '<pre>';
+	//    echo 'CREATE ACTION HIT' . PHP_EOL;
+	//    var_dump($_POST);
+	//    exit;
+			$this->addFlashMessage('The object was created.');
+			$this->mydayRepository->add($newMyday);
+			$this->redirect('list');
+		}
 
     /**
      * action edit
@@ -852,5 +848,15 @@ protected function sendUserBookingConfirmation(\Mcplamen\Monthlyschedule\Domain\
 		return $months[$month] ?? 'Unknown';
 	}
 	
+	/**
+	 * Helper method to assign isAdmin to view
+	 */
+	protected function assignIsAdminToView()
+	{
+		if ($this->view) {
+			$isAdmin = $this->isLoggedInFrontendUser();
+			$this->view->assign('isAdmin', $isAdmin);
+		}
+	}
 	
 }

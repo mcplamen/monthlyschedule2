@@ -1,15 +1,10 @@
-<div class="action-bar">
-    <f:link.action action="index" controller="Myday" class="btn">
-        📅 MyDay – Index
-    </f:link.action>
+<f:security.ifAuthenticated>
+    <div class="action-bar">
 
     <f:link.action action="list" controller="Myday" class="btn">
         📄 MyDay – List
     </f:link.action>
 
-    <f:link.action action="new" controller="Myday" class="btn">
-        ➕ MyDay – New
-    </f:link.action>
 
     <f:link.action action="index" controller="Mymonth" class="btn">
         🗓 MyMonth – Index
@@ -23,3 +18,4 @@
         ➕ MyMonth – New
     </f:link.action>
 </div>
+</f:security.ifAuthenticated>
